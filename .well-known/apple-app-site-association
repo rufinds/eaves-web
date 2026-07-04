@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appID": "RU6VL3A6P8.com.eaves.app",
+        "paths": [
+          "/event/*",
+          "/user/*",
+          "/artist/*",
+          "/organizer/*",
+          "/venue-owner/*",
+          "/venue/*",
+          "/auth/reset-password*",
+          "/friends/*"
+        ]
+      }
+    ]
+  }
+}

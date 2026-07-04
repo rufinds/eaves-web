@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.eaves.app",
+      "sha256_cert_fingerprints": [
+        "8F:D2:01:8E:39:28:C7:61:02:F4:74:17:ED:19:02:3E:84:65:83:A0:F0:FF:97:01:AC:C7:8A:EE:2A:AA:53:CE"
+      ]
+    }
+  }
+]
