@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — EAVES</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #ffffff;
+  }
+  h1 { font-size: 28px; margin-bottom: 4px; }
+  h2 { font-size: 19px; margin-top: 36px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; font-size: 14px; }
+  th { background: #f7f7f7; }
+  a { color: #E8000D; }
+  code { background: #f2f2f2; padding: 1px 5px; border-radius: 3px; font-size: 90%; }
+  .updated { color: #777; font-size: 14px; margin-bottom: 32px; }
+  .back { display: inline-block; margin-bottom: 24px; color: #777; text-decoration: none; font-size: 14px; }
+  .back:hover { color: #1a1a1a; }
+</style>
+</head>
+<body>
+<a class="back" href="/">← Eaves</a>
+<h1>EAVES Privacy Policy</h1>
+<p>Last updated: 2026-07-03</p>
+<h2>1. Who we are</h2>
+<p>EAVES ("we," "us," "our") is a nightlife and events discovery platform operated by Rufin De Schreye, based in Belgium.</p>
+<p>Data controller contact: rufindeschreye@gmail.com
+Support contact: eaves.help@gmail.com</p>
+<p>For the purposes of the General Data Protection Regulation (GDPR), we are the data controller for the personal data described below.</p>
+<h2>2. What data we collect</h2>
+<h3>2.1 Account data (all users)</h3>
+<ul>
+<li>Email address</li>
+<li>First and last name</li>
+<li>Date of birth (used solely to verify you meet our minimum age requirement of 16)</li>
+<li>Password (stored as a salted hash via Supabase Auth — we never see or store your plaintext password)</li>
+<li>Language preference</li>
+</ul>
+<h3>2.2 Location data</h3>
+<ul>
+<li>Your device's GPS location, used to show nearby events and venues, and to let you set a location when creating an event. Location access is optional and requested via your device's permission system; you can decline or revoke it at any time.</li>
+</ul>
+<h3>2.3 Social &amp; activity data</h3>
+<ul>
+<li>Friends, follows, and follow requests you make within the app</li>
+<li>Events you RSVP to, save, or create</li>
+<li>Ratings and reviews you leave</li>
+<li>Genre preferences</li>
+</ul>
+<h3>2.4 Photos and media</h3>
+<ul>
+<li>Profile pictures</li>
+<li>Event, venue, artist, and organizer images you upload</li>
+</ul>
+<h3>2.5 Role-specific data</h3>
+<p>If you request or hold a role beyond standard user, we additionally process:
+- <strong>Artists</strong>: bio, social media links, featured tracks/links, booking contact information
+- <strong>Organizers</strong>: bio, contact information, social media links
+- <strong>Venue owners</strong>: company name, Belgian company registration number (KBO/BCE), business address, and any supporting documentation submitted for verification</p>
+<h3>2.6 Device &amp; technical data</h3>
+<ul>
+<li>Push notification tokens (to send you event reminders and updates — you can disable this in your device settings)</li>
+<li>Crash and error diagnostic data, collected automatically via Sentry</li>
+<li>Basic device information (OS version, app version) for compatibility and debugging</li>
+</ul>
+<h2>3. Why we process your data (legal basis)</h2>
+<table>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Legal basis (GDPR Art. 6)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Creating and managing your account</td>
+<td>Contract (Art. 6(1)(b))</td>
+</tr>
+<tr>
+<td>Showing nearby events/venues</td>
+<td>Consent (Art. 6(1)(a)) — location is opt-in</td>
+</tr>
+<tr>
+<td>Social features (friends, follows, RSVPs)</td>
+<td>Contract</td>
+</tr>
+<tr>
+<td>Age verification (16+ minimum)</td>
+<td>Legal obligation / legitimate interest</td>
+</tr>
+<tr>
+<td>Sending push notifications</td>
+<td>Consent — you can opt out</td>
+</tr>
+<tr>
+<td>Fixing bugs and crashes</td>
+<td>Legitimate interest (Art. 6(1)(f))</td>
+</tr>
+<tr>
+<td>Venue owner verification</td>
+<td>Legal obligation / legitimate interest (fraud prevention)</td>
+</tr>
+</tbody>
+</table>
+<h2>4. Who we share your data with (subprocessors)</h2>
+<p>We use the following third-party service providers to operate EAVES. Each only receives the data necessary for their specific function, and each is bound by a data processing agreement where applicable:</p>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Purpose</th>
+<th>Data involved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Supabase</strong></td>
+<td>Database, authentication, file storage</td>
+<td>All account, social, location, and media data</td>
+</tr>
+<tr>
+<td><strong>Render</strong></td>
+<td>API hosting</td>
+<td>Data in transit while the app is in use</td>
+</tr>
+<tr>
+<td><strong>Sentry</strong></td>
+<td>Error and crash monitoring</td>
+<td>Technical/device data, and any data present in memory at the time of a crash</td>
+</tr>
+<tr>
+<td><strong>Expo / EAS</strong></td>
+<td>App builds, over-the-air updates, push notifications</td>
+<td>Push notification tokens, device information</td>
+</tr>
+<tr>
+<td><strong>Google Maps</strong></td>
+<td>Location display, geocoding</td>
+<td>Location data you choose to share</td>
+</tr>
+</tbody>
+</table>
+<p>We do not sell your personal data. We do not share your data with advertisers.</p>
+<p>Supabase and Render both host our data in the <strong>EU (Frankfurt, Germany)</strong> region. Sentry stores our data in the <strong>EU</strong> region.</p>
+<p>Expo/EAS and Google Maps are US-based providers. Transfers of EU personal data to these providers are covered by the <strong>EU-U.S. Data Privacy Framework</strong> (an adequacy mechanism recognized by the European Commission) and/or <strong>Standard Contractual Clauses</strong>, as each provider's own compliance documentation confirms.</p>
+<h2>5. How long we keep your data</h2>
+<p>We retain your account data for as long as your account is active.</p>
+<p><strong>When you delete your account</strong>, we immediately and permanently delete your profile, uploaded photos, social connections (friends, follows), RSVPs, ratings, and role-specific data (artist, organizer, or venue owner profiles).</p>
+<p><strong>Exception — content tied to shared or public use.</strong> Events and venues you created may remain visible after you delete your account, so that other users who RSVP'd, saved, or otherwise engaged with that content are not affected. This content is de-identified — it is no longer attributed to your account or personal data.</p>
+<p><strong>Exception — security and moderation logs.</strong> Where you have been the actor or subject of an administrative action (e.g. a role approval or a report review), a de-identified log entry of that action may be retained for up to 12 months for security and abuse-prevention purposes, even after account deletion. This log entry is not linked back to your personal data once your account is deleted.</p>
+<p>Crash and error diagnostic data collected via Sentry is retained for 30 days.</p>
+<h2>6. Your rights</h2>
+<p>Under GDPR, you have the right to:
+- <strong>Access</strong> the personal data we hold about you
+- <strong>Rectify</strong> inaccurate data
+- <strong>Erase</strong> your data ("right to be forgotten") — you can do this yourself at any time via Account Settings → Delete Account, which permanently deletes your profile and associated data
+- <strong>Restrict or object to</strong> certain processing
+- <strong>Data portability</strong> — receive your data in a machine-readable format
+- <strong>Withdraw consent</strong> at any time (e.g. for location access or push notifications), without affecting the lawfulness of processing before withdrawal</p>
+<p>To exercise these rights, contact us at eaves.help@gmail.com. You also have the right to lodge a complaint with the Belgian Data Protection Authority (Gegevensbeschermingsautoriteit / Autorité de protection des données) at <a href="https://www.gegevensbeschermingsautoriteit.be">www.gegevensbeschermingsautoriteit.be</a>.</p>
+<h2>7. Children</h2>
+<p>EAVES is not intended for anyone under 16 years old. We ask for your date of birth at signup and block registration if it indicates you are under 16. We do not independently verify identity documents, and we do not knowingly collect data from users under this age.</p>
+<h2>8. Changes to this policy</h2>
+<p>We may update this policy from time to time. We will notify you of material changes via the app or by email. Continued use of EAVES after changes take effect constitutes acceptance of the updated policy.</p>
+<h2>9. Contact</h2>
+<p>Questions about this policy or your data: eaves.help@gmail.com</p>
+</body>
+</html>
