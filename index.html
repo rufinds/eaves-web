@@ -230,43 +230,142 @@
     .feature-text p { margin: 0 auto; }
   }
 
-  /* ---------- CTA ---------- */
+  /* ---------- Lead statement ---------- */
 
-  .cta {
-    max-width: 640px;
+  .lead {
+    max-width: 620px;
     margin: 0 auto;
-    padding: 24px 24px 80px;
+    padding: 0 24px 24px;
     text-align: center;
   }
 
-  .cta h2 {
+  .lead h2 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(26px, 4vw, 34px);
-    margin: 0 0 12px;
+    font-size: clamp(26px, 4vw, 36px);
+    letter-spacing: -0.01em;
+    margin: 0 0 16px;
+  }
+
+  .lead p {
+    color: var(--text-muted);
+    font-size: 17px;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* ---------- Feature groups ---------- */
+
+  .group-head {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 24px 8px;
+  }
+
+  .group-head .eyebrow { margin-bottom: 0; }
+
+  /* ---------- Mini cards (text-only features) ---------- */
+
+  .mini-grid {
+    max-width: 1080px;
+    margin: 8px auto 0;
+    padding: 8px 24px 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .mini-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .mini-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    margin: 0 0 8px;
     letter-spacing: -0.01em;
   }
 
-  .cta p {
+  .mini-card p {
     color: var(--text-muted);
-    font-size: 16px;
-    margin: 0 0 28px;
-  }
-
-  .cta-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 28px;
-    background: var(--red-bright);
-    color: var(--text);
-    text-decoration: none;
-    border-radius: 999px;
-    font-weight: 600;
     font-size: 15px;
-    transition: background 0.15s ease, transform 0.15s ease;
+    line-height: 1.6;
+    margin: 0;
   }
 
-  .cta-button:hover { background: #d43a2f; transform: translateY(-1px); }
+  @media (max-width: 640px) {
+    .mini-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Built for the whole scene ---------- */
+
+  .scene {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px;
+    text-align: center;
+  }
+
+  .scene .eyebrow { text-align: center; }
+
+  .scene h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 3.4vw, 30px);
+    max-width: 560px;
+    margin: 0 auto 32px;
+    letter-spacing: -0.01em;
+  }
+
+  .scene-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    text-align: left;
+  }
+
+  .scene-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .scene-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: var(--red-bright);
+  }
+
+  .scene-card p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .scene-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Privacy note ---------- */
+
+  .privacy-note {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 24px 64px;
+    text-align: center;
+  }
+
+  .privacy-note p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .privacy-note strong { color: var(--text); font-weight: 600; }
 
   /* ---------- Footer ---------- */
 
@@ -314,38 +413,24 @@
     <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
   </div>
 
+  <section class="lead">
+    <h2>Eaves is where nightlife gets social.</h2>
+    <p>Find out what's happening tonight — from club nights and concerts to hidden gems around the city. See where your friends are heading, invite them to join you, and never show up to a venue alone.</p>
+  </section>
+
   <main class="features">
+
+    <div class="group-head">
+      <span class="eyebrow">Discover the night</span>
+    </div>
 
     <div class="feature">
       <div class="feature-media">
         <img src="/assets/screenshot-discover.webp" alt="Eaves home screen showing tonight's events and personalized recommendations" width="380" height="676" loading="lazy">
       </div>
       <div class="feature-text">
-        <span class="eyebrow">Discover</span>
-        <h2>Find your next night out.</h2>
-        <p>See what's happening tonight in Leuven — festivals, club nights, and everything in between, recommended based on your genres and who you follow.</p>
-      </div>
-    </div>
-
-    <div class="feature">
-      <div class="feature-media">
-        <img src="/assets/screenshot-friends.webp" alt="Eaves home screen showing which friends are attending an event" width="380" height="676" loading="lazy">
-      </div>
-      <div class="feature-text">
-        <span class="eyebrow">Friends</span>
-        <h2>See where your friends are going.</h2>
-        <p>Never pick an event blind. See at a glance who's going, who's interested, and what your friends are discovering through the people they follow.</p>
-      </div>
-    </div>
-
-    <div class="feature">
-      <div class="feature-media">
-        <img src="/assets/screenshot-detail.webp" alt="Eaves event detail screen with timing, location, tickets and attendees" width="380" height="676" loading="lazy">
-      </div>
-      <div class="feature-text">
-        <span class="eyebrow">Event detail</span>
-        <h2>Know before you go.</h2>
-        <p>Timing, location, tickets, and who's attending — all on one screen, so you're never scrambling for details on your way out the door.</p>
+        <h2>Explore</h2>
+        <p>Find events, venues, and artists near you.</p>
       </div>
     </div>
 
@@ -354,10 +439,23 @@
         <img src="/assets/screenshot-lineup.webp" alt="Eaves lineup screen with stages, artists and set times" width="380" height="676" loading="lazy">
       </div>
       <div class="feature-text">
-        <span class="eyebrow">Lineup</span>
-        <h2>See who's performing.</h2>
-        <p>Browse by stage and set time, so you know exactly when your favorite artist is on — and when it's time to discover someone new.</p>
+        <h2>Check the line-up</h2>
+        <p>See who's performing and preview the music before you go.</p>
       </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-media">
+        <img src="/assets/screenshot-friends.webp" alt="Eaves home screen showing which friends are attending an event" width="380" height="676" loading="lazy">
+      </div>
+      <div class="feature-text">
+        <h2>Check the crowd</h2>
+        <p>See which of your friends are going before you commit.</p>
+      </div>
+    </div>
+
+    <div class="group-head">
+      <span class="eyebrow">Plan &amp; invite</span>
     </div>
 
     <div class="feature">
@@ -365,9 +463,19 @@
         <img src="/assets/screenshot-invitations.webp" alt="Eaves agenda screen showing event invitations from friends" width="380" height="676" loading="lazy">
       </div>
       <div class="feature-text">
-        <span class="eyebrow">Agenda</span>
-        <h2>Get invited by friends.</h2>
-        <p>Friends invite you straight from the app. One tap to go, show interest, or decline — no group chats required.</p>
+        <h2>Sync up</h2>
+        <p>See your friends' nightlife plans in one central feed.</p>
+      </div>
+    </div>
+
+    <div class="mini-grid">
+      <div class="mini-card">
+        <h3>Host your own</h3>
+        <p>Create private events (like pre-drinks or house parties) and invite your inner circle.</p>
+      </div>
+      <div class="mini-card">
+        <h3>Stay connected</h3>
+        <p>Follow your favorite artists, venues, and organizers.</p>
       </div>
     </div>
 
@@ -377,11 +485,24 @@
     <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
   </div>
 
-  <section class="cta">
-    <h2>Be there from the start.</h2>
-    <p>Eaves launches in Leuven this September. Follow along for early access and launch updates.</p>
-    <a class="cta-button" href="https://instagram.com/eaves.app">Follow on Instagram →</a>
+  <section class="scene">
+    <span class="eyebrow">Built for the whole scene</span>
+    <h2>Eaves isn't just for partygoers — it's for the creators too.</h2>
+    <div class="scene-grid">
+      <div class="scene-card">
+        <h3>Organizers &amp; Venues</h3>
+        <p>Reach a local, active audience looking for tonight's plans.</p>
+      </div>
+      <div class="scene-card">
+        <h3>Artists</h3>
+        <p>Build your public profile and connect directly with organizers.</p>
+      </div>
+    </div>
   </section>
+
+  <div class="privacy-note">
+    <p><strong>Your privacy, your control.</strong> Location access is completely optional, and you decide who sees your profile, your friends list, and the events you attend.</p>
+  </div>
 
   <footer>
     <div class="footer-links">
