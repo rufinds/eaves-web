@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wachtwoord resetten — Eaves</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            text-align: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .container { max-width: 420px; margin: auto; }
+        .button {
+            display: inline-block;
+            background-color: #B8291F;
+            color: white;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        p { color: #aaaaaa; line-height: 1.5; }
+        .hint { font-size: 13px; margin-top: 32px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Wachtwoord resetten</h2>
+        <p id="status">Je wordt doorgestuurd naar de Eaves-app…</p>
+        <a id="fallback-link" class="button" href="#">Open Eaves</a>
+        <p class="hint">
+            Als er niets gebeurt: zorg dat de Eaves-app geïnstalleerd is en tik dan op de knop hierboven.
+            Werkt het nog steeds niet? Vraag een nieuwe resetlink aan in de app.
+        </p>
+    </div>
+
+    <script>
+        // This page exists as a fallback for the /auth/reset-password universal
+        // link. When AASA/assetlinks verification succeeds on the device, the OS
+        // intercepts this URL before it ever reaches this server — this page is
+        // never shown. It only renders when that interception doesn't happen
+        // (app not installed yet, desktop browser, verification not yet
+        // propagated on that specific device). Forwards the query params to the
+        // eaves:// custom scheme as a manual fallback.
+        const params = new URLSearchParams(window.location.search);
+        const tokenHash = params.get('token_hash');
+        const type = params.get('type') || 'recovery';
+
+        if (tokenHash) {
+            const appUrl = `eaves://auth/reset-password?token_hash=${encodeURIComponent(tokenHash)}&type=${encodeURIComponent(type)}`;
+            document.getElementById('fallback-link').href = appUrl;
+            window.location.href = appUrl;
+        } else {
+            document.getElementById('status').textContent =
+                'Deze link is ongeldig of onvolledig. Vraag een nieuwe resetlink aan in de app.';
+            document.getElementById('fallback-link').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
