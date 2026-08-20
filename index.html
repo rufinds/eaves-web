@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#121212">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Eaves — Nightlife, with your friends.">
+<meta property="og:title" content="Eaves — Leuven Nightlife. One Place.">
 <meta property="og:description" content="A nightlife and events discovery app for Leuven — download now.">
 <meta property="og:image" content="/assets/scene-banner.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -386,7 +386,7 @@
 
   .scene-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     text-align: left;
   }
@@ -411,7 +411,7 @@
     margin: 0;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 760px) {
     .scene-grid { grid-template-columns: 1fr; }
   }
 
@@ -460,6 +460,33 @@
     border-top: 1px solid var(--border);
   }
 
+  .store-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .store-badges img {
+    height: 44px;
+    width: auto;
+  }
+
+  .acronym-line {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .acronym-line strong {
+    color: var(--red-bright);
+    font-weight: 600;
+  }
+
   .footer-links {
     display: flex;
     gap: 24px;
@@ -487,7 +514,7 @@
       <img src="/assets/icon.png" alt="Eaves logo">
     </div>
     <h1>Eaves</h1>
-    <p class="tagline">Nightlife, with your friends.</p>
+    <p class="tagline">Leuven Nightlife. One Place.</p>
     <p class="location">Available now in <strong>Leuven</strong>.</p>
     <div class="cta-row">
       <a class="cta-btn" href="https://eaves.be/app">Download Eaves</a>
@@ -578,12 +605,16 @@
     </div>
     <div class="scene-grid">
       <div class="scene-card">
-        <h3>Organizers &amp; Venues</h3>
-        <p>Reach a local, active audience looking for tonight's plans.</p>
+        <h3>Hosts</h3>
+        <p>Create events, build lineups, invite artists, bring people together.</p>
       </div>
       <div class="scene-card">
         <h3>Artists</h3>
-        <p>Build your public profile and connect directly with organizers.</p>
+        <p>Build your profile, share your sound, join lineups, get discovered.</p>
+      </div>
+      <div class="scene-card">
+        <h3>Venues</h3>
+        <p>Showcase your space, host events, connect with artists and hosts.</p>
       </div>
     </div>
   </section>
@@ -600,9 +631,14 @@
   </div>
 
   <footer>
-    <div class="cta-row" style="margin-top:0; margin-bottom: 8px;">
-      <a class="cta-btn secondary" href="https://play.google.com/store/apps/details?id=com.eaves.app">Google Play</a>
-      <a class="cta-btn secondary" href="https://apps.apple.com/app/id6794866218">App Store</a>
+    <p class="acronym-line"><strong>E</strong>xplore · <strong>A</strong>rtists · <strong>V</strong>enues · <strong>E</strong>vents · <strong>S</strong>cenes</p>
+    <div class="store-badges">
+      <a href="https://play.google.com/store/apps/details?id=com.eaves.app">
+        <img src="/assets/store-badge-google.svg" alt="Get it on Google Play">
+      </a>
+      <a href="https://apps.apple.com/app/id6794866218">
+        <img src="/assets/store-badge-apple.svg" alt="Download on the App Store">
+      </a>
     </div>
     <div class="footer-links">
       <a href="/privacy.html">Privacy Policy</a>
