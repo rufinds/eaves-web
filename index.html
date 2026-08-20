@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eaves — Nightlife in Leuven</title>
-<meta name="description" content="Eaves is a nightlife and events discovery app for Leuven. See where your friends are going, discover lineups, and never miss a night out. Launching September 2026.">
+<meta name="description" content="Eaves is a nightlife and events discovery app for Leuven — live now. See where your friends are going, discover lineups, and never miss a night out.">
 <meta name="theme-color" content="#121212">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Eaves — Nightlife, with your friends.">
-<meta property="og:description" content="A nightlife and events discovery app launching in Leuven, September 2026.">
-<meta property="og:image" content="/assets/feature-graphic.png">
+<meta property="og:description" content="A nightlife and events discovery app for Leuven — download now.">
+<meta property="og:image" content="/assets/scene-banner.png">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" type="image/png" href="/assets/icon.png">
@@ -33,6 +33,27 @@
 
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+  }
+
+  /* ---------- Scroll reveal ---------- */
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
   }
 
   html, body {
@@ -130,6 +151,40 @@
   }
 
   p.location strong { color: var(--text); font-weight: 500; }
+
+  /* ---------- CTA buttons ---------- */
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 32px;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    background: var(--red-bright);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.15s ease;
+  }
+
+  .cta-btn:hover { background: #d13a2f; }
+
+  .cta-btn.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .cta-btn.secondary:hover { border-color: var(--text-muted); }
 
   /* ---------- Equalizer divider (signature element) ---------- */
 
@@ -318,6 +373,17 @@
     letter-spacing: -0.01em;
   }
 
+  .scene-banner {
+    max-width: 480px;
+    margin: 0 auto 40px;
+  }
+
+  .scene-banner img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+  }
+
   .scene-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -347,6 +413,22 @@
 
   @media (max-width: 640px) {
     .scene-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Bottom CTA ---------- */
+
+  .cta-section {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 24px 24px 64px;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(24px, 3.6vw, 32px);
+    margin: 0 0 24px;
+    letter-spacing: -0.01em;
   }
 
   /* ---------- Privacy note ---------- */
@@ -400,20 +482,23 @@
 <body>
 
   <section class="hero">
-    <span class="badge">Launching in Leuven — September 2026</span>
+    <span class="badge">Live now in Leuven</span>
     <div class="logo-wrap">
       <img src="/assets/icon.png" alt="Eaves logo">
     </div>
     <h1>Eaves</h1>
     <p class="tagline">Nightlife, with your friends.</p>
-    <p class="location">Starting in <strong>Leuven</strong>.</p>
+    <p class="location">Available now in <strong>Leuven</strong>.</p>
+    <div class="cta-row">
+      <a class="cta-btn" href="https://eaves.be/app">Download Eaves</a>
+    </div>
   </section>
 
   <div class="eq-divider" aria-hidden="true">
     <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
   </div>
 
-  <section class="lead">
+  <section class="lead reveal">
     <h2>Eaves is where nightlife gets social.</h2>
     <p>Find out what's happening tonight — from club nights and concerts to hidden gems around the city. See where your friends are heading, invite them to join you, and never show up to a venue alone.</p>
   </section>
@@ -424,9 +509,9 @@
       <span class="eyebrow">Discover the night</span>
     </div>
 
-    <div class="feature">
+    <div class="feature reveal">
       <div class="feature-media">
-        <img src="/assets/screenshot-discover.webp" alt="Eaves home screen showing tonight's events and personalized recommendations" width="380" height="676" loading="lazy">
+        <img src="/assets/feature-find-your-night.png" alt="Eaves home screen showing tonight's events and personalized recommendations" width="600" height="600" loading="lazy">
       </div>
       <div class="feature-text">
         <h2>Explore</h2>
@@ -434,9 +519,9 @@
       </div>
     </div>
 
-    <div class="feature">
+    <div class="feature reveal">
       <div class="feature-media">
-        <img src="/assets/screenshot-lineup.webp" alt="Eaves lineup screen with stages, artists and set times" width="380" height="676" loading="lazy">
+        <img src="/assets/feature-lineup.png" alt="Eaves lineup screen with stages, artists and set times" width="600" height="600" loading="lazy">
       </div>
       <div class="feature-text">
         <h2>Check the line-up</h2>
@@ -444,9 +529,9 @@
       </div>
     </div>
 
-    <div class="feature">
+    <div class="feature reveal">
       <div class="feature-media">
-        <img src="/assets/screenshot-friends.webp" alt="Eaves home screen showing which friends are attending an event" width="380" height="676" loading="lazy">
+        <img src="/assets/feature-whos-going.png" alt="Eaves home screen showing which friends are attending an event" width="600" height="600" loading="lazy">
       </div>
       <div class="feature-text">
         <h2>Check the crowd</h2>
@@ -458,9 +543,9 @@
       <span class="eyebrow">Plan &amp; invite</span>
     </div>
 
-    <div class="feature">
+    <div class="feature reveal">
       <div class="feature-media">
-        <img src="/assets/screenshot-invitations.webp" alt="Eaves agenda screen showing event invitations from friends" width="380" height="676" loading="lazy">
+        <img src="/assets/feature-event-details.png" alt="Eaves event detail screen with attendance status and invite option" width="600" height="600" loading="lazy">
       </div>
       <div class="feature-text">
         <h2>Sync up</h2>
@@ -468,7 +553,7 @@
       </div>
     </div>
 
-    <div class="mini-grid">
+    <div class="mini-grid reveal">
       <div class="mini-card">
         <h3>Host your own</h3>
         <p>Create private events (like pre-drinks or house parties) and invite your inner circle.</p>
@@ -485,9 +570,12 @@
     <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
   </div>
 
-  <section class="scene">
+  <section class="scene reveal">
     <span class="eyebrow">Built for the whole scene</span>
     <h2>Eaves isn't just for partygoers — it's for the creators too.</h2>
+    <div class="scene-banner">
+      <img src="/assets/scene-banner.png" alt="Eaves is built for artists, hosts, and venues, as well as partygoers" loading="lazy">
+    </div>
     <div class="scene-grid">
       <div class="scene-card">
         <h3>Organizers &amp; Venues</h3>
@@ -500,11 +588,22 @@
     </div>
   </section>
 
+  <section class="cta-section reveal">
+    <h2>Your night starts here.</h2>
+    <div class="cta-row">
+      <a class="cta-btn" href="https://eaves.be/app">Download Eaves</a>
+    </div>
+  </section>
+
   <div class="privacy-note">
     <p><strong>Your privacy, your control.</strong> Location access is completely optional, and you decide who sees your profile, your friends list, and the events you attend.</p>
   </div>
 
   <footer>
+    <div class="cta-row" style="margin-top:0; margin-bottom: 8px;">
+      <a class="cta-btn secondary" href="https://play.google.com/store/apps/details?id=com.eaves.app">Google Play</a>
+      <a class="cta-btn secondary" href="https://apps.apple.com/app/id6794866218">App Store</a>
+    </div>
     <div class="footer-links">
       <a href="/privacy.html">Privacy Policy</a>
       <a href="/terms.html">Terms of Service</a>
@@ -513,6 +612,26 @@
     </div>
     <span class="contact">help@eaves.be</span>
   </footer>
+
+  <script>
+    // Fade + slide in each .reveal element once it enters the viewport.
+    // Elements already in view on load reveal immediately (no observer delay).
+    var revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      revealEls.forEach(function (el) { observer.observe(el); });
+    } else {
+      // No IntersectionObserver support — just show everything.
+      revealEls.forEach(function (el) { el.classList.add('visible'); });
+    }
+  </script>
 
 </body>
 </html>

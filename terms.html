@@ -4,39 +4,136 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terms of Service — EAVES</title>
+<meta name="theme-color" content="#121212">
+<link rel="icon" type="image/png" href="/assets/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg:         #121212;
+    --bg-raised:  #1A1A1A;
+    --red-bright: #B8291F;
+    --text:       #F2F0ED;
+    --text-muted: #8A8A8A;
+    --border:     #2A2A2A;
+  }
+  * { box-sizing: border-box; }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     max-width: 720px;
     margin: 0 auto;
-    padding: 40px 20px 80px;
+    padding: 0 20px 80px;
     line-height: 1.6;
-    color: #F2F0ED;
-    background: #121212;
+    color: var(--text);
+    background: var(--bg);
   }
-  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 30px; margin-bottom: 4px; letter-spacing: -0.01em; }
-  h2 { font-size: 19px; margin-top: 36px; border-bottom: 1px solid #2A2A2A; padding-bottom: 6px; color: #F2F0ED; }
-  h3 { color: #F2F0ED; }
-  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
-  th, td { border: 1px solid #2A2A2A; padding: 8px 12px; text-align: left; font-size: 14px; }
-  th { background: #1A1A1A; }
-  a { color: #B8291F; }
-  a:hover { color: #E8382E; }
-  code { background: #1A1A1A; padding: 1px 5px; border-radius: 3px; font-size: 90%; color: #F2F0ED; }
-  strong { color: #F2F0ED; }
-  ul li, p { color: #C9C7C3; }
-  .updated { color: #8A8A8A; font-size: 14px; margin-bottom: 32px; }
-  .back { display: inline-block; margin-bottom: 24px; color: #8A8A8A; text-decoration: none; font-size: 14px; }
-  .back:hover { color: #F2F0ED; }
+
+  /* ---------- Header / back nav ---------- */
+
+  .page-header {
+    padding: 28px 0 8px;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px 8px 10px;
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .back:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+  }
+
+  .back svg { flex: none; }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .updated {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 0 40px;
+  }
+
+  /* ---------- Body content ---------- */
+
+  h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    margin-top: 44px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  h3 { color: var(--text); font-size: 16px; margin-top: 24px; }
+
+  p, ul li { color: #C9C7C3; }
+
+  ul { padding-left: 22px; }
+  ul li { margin-bottom: 4px; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  th {
+    background: var(--bg-raised);
+    font-weight: 600;
+  }
+
+  a { color: var(--red-bright); text-decoration: none; }
+  a:hover { color: #E8382E; text-decoration: underline; }
+
+  code {
+    background: var(--bg-raised);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 90%;
+    color: var(--text);
+  }
+
+  strong { color: var(--text); }
 </style>
 </head>
 <body>
-<a class="back" href="/">← Eaves</a>
-<h1>EAVES Terms of Service</h1>
-<p>Last updated: 2026-07-03</p>
+
+<div class="page-header">
+  <a class="back" href="/">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Eaves
+  </a>
+  <h1>EAVES Terms of Service</h1>
+  <p class="updated">Last updated: 2026-07-03</p>
+</div>
+
 <h2>1. Acceptance of these terms</h2>
 <p>By creating an account or using EAVES, you agree to these Terms of Service and our Privacy Policy. If you do not agree, please do not use the app.</p>
 <h2>2. Eligibility</h2>
