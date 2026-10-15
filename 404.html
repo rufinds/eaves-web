@@ -13,28 +13,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<script>
-  // iOS Smart App Banner. app-argument carries the deep link, so tapping the
-  // banner's "Open" button opens the app on the right screen (and keeps the
-  // claim). Added from script because the argument depends on the path.
-  (function () {
-    if (!/iPad|iPhone|iPod/.test(navigator.userAgent || '')) return;
-    var meta = document.createElement('meta');
-    meta.name = 'apple-itunes-app';
-    meta.content = 'app-id=6794866218, app-argument=eaves://' +
-      location.pathname.replace(/^\/+/, '') + location.search;
-    document.head.appendChild(meta);
-  })();
-</script>
 <style>
   :root {
     --bg:         #121212;
-    --bg-raised:  #1A1A1A;
-    --red:        #8B0000;
     --red-bright: #B8291F;
     --text:       #F2F0ED;
     --text-muted: #8A8A8A;
-    --border:     #2A2A2A;
   }
 
   * { box-sizing: border-box; }
@@ -49,9 +33,7 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
-  a { color: inherit; }
-
-  a:focus-visible, button:focus-visible {
+  a:focus-visible {
     outline: 2px solid var(--red-bright);
     outline-offset: 3px;
     border-radius: 2px;
@@ -74,148 +56,86 @@
     inset: 0;
     background: radial-gradient(ellipse 60% 45% at 50% 0%, rgba(139,0,0,0.28), transparent 70%);
     pointer-events: none;
-    z-index: 0;
   }
 
-  .wrap > * { position: relative; z-index: 1; }
+  .wrap > * { position: relative; }
 
   .logo {
-    width: 88px;
-    height: 88px;
-    border-radius: 20px;
-    margin-bottom: 24px;
-  }
-
-  .profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .profile-img {
     width: 96px;
     height: 96px;
+    border-radius: 22px;
+    margin-bottom: 28px;
+  }
+
+  /* A real profile photo replaces the logo and is round. */
+  .logo.photo {
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--border);
-    background: var(--bg-raised);
   }
 
   h1 {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: clamp(22px, 5vw, 28px);
+    font-size: clamp(26px, 7vw, 32px);
     letter-spacing: -0.01em;
-    margin: 0 0 10px;
+    line-height: 1.2;
+    margin: 0 0 28px;
     max-width: 340px;
+    overflow-wrap: anywhere;
   }
 
-  p.sub {
+  .note {
     color: var(--text-muted);
     font-size: 15px;
     line-height: 1.6;
-    margin: 0 0 28px;
-    max-width: 320px;
-  }
-
-  .tip {
+    margin: -12px 0 28px;
     max-width: 300px;
-    margin: -8px 0 24px;
-    padding: 10px 14px;
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--text-muted);
   }
 
-  .cta-col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  .note.small {
+    font-size: 13px;
+    margin: 20px 0 0;
+  }
+
+  .cta {
     width: 100%;
     max-width: 300px;
   }
 
   .btn {
     display: block;
-    padding: 14px 20px;
-    border-radius: 12px;
+    padding: 16px 20px;
+    border-radius: 14px;
     background: var(--red-bright);
     color: #fff;
     text-decoration: none;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 17px;
     transition: background 0.15s ease;
   }
 
   .btn:hover { background: #d13a2f; }
-
-  .btn.secondary {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-
-  .btn.secondary:hover { border-color: var(--text-muted); }
-
-  .link-muted {
-    margin-top: 4px;
-    font-size: 13px;
-    color: var(--text-muted);
-    text-decoration: none;
-  }
-
-  .link-muted:hover { color: var(--text); }
-
-  .hint {
-    margin-top: 28px;
-    font-size: 12px;
-    color: var(--text-muted);
-    max-width: 280px;
-    line-height: 1.6;
-  }
-
-  .hint.warn {
-    margin-top: 16px;
-    color: var(--text);
-  }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <img class="logo" src="/assets/icon.png" alt="Eaves">
-
-    <!-- Filled in only when PROFILE_PREVIEW is configured (see script). -->
-    <div class="profile" id="profile" hidden>
-      <img class="profile-img" id="profileImg" alt="" hidden>
+  <main class="wrap">
+    <img class="logo" id="logo" src="/assets/icon.png" alt="Eaves">
+    <h1 id="heading">Claim your profile</h1>
+    <p class="note" id="note" hidden></p>
+    <div class="cta">
+      <a class="btn" id="claimBtn" href="#">Claim profile</a>
+      <a class="btn" id="installBtn" href="https://eaves.be/app" hidden>Download Eaves</a>
     </div>
-
-    <h1 id="heading">Open this in the Eaves app</h1>
-    <p class="sub" id="subtext">This link only works inside the Eaves app.</p>
-
-    <p class="tip" id="inAppTip" hidden></p>
-
-    <div class="cta-col">
-      <a class="btn" id="openBtn" href="#">Open in Eaves</a>
-      <a class="btn secondary" id="storeBtn" href="https://eaves.be/app">Download Eaves</a>
-      <a class="link-muted" id="siteLink" href="https://eaves.be">Go to eaves.be</a>
-    </div>
-
-    <p class="hint" id="installHint"></p>
-    <p class="hint warn" id="notOpened" hidden></p>
-  </div>
+    <p class="note small" id="inAppNote" hidden></p>
+  </main>
 
   <script>
     (function () {
       // ── Configuration ──────────────────────────────────────────────────────
-      var APP_SCHEME     = 'eaves';
+      var APP_SCHEME      = 'eaves';
       var ANDROID_PACKAGE = 'com.eaves.app';
-      var PLAY_URL       = 'https://play.google.com/store/apps/details?id=' + ANDROID_PACKAGE;
-      var APP_STORE_URL  = 'https://apps.apple.com/app/id6794866218';
+      var PLAY_URL        = 'https://play.google.com/store/apps/details?id=' + ANDROID_PACKAGE;
+      var APP_STORE_URL   = 'https://apps.apple.com/app/id6794866218';
 
       // Set to true once the native build that reads the Google Play install
       // referrer has been released. Until then the claim token would only be
@@ -235,38 +155,34 @@
       // ── Copy ───────────────────────────────────────────────────────────────
       var STRINGS = {
         en: {
-          genericTitle: 'Open this in the Eaves app',
-          genericSub: 'This link works inside the Eaves app.',
-          claimTitle: 'Is this your profile?',
+          claimGeneric: 'Claim your profile',
           claimNamed: 'Claim {name}',
-          claimArtist: 'Open this link in the Eaves app to claim your artist profile.',
-          claimOrganizer: 'Open this link in the Eaves app to claim your organizer profile.',
-          open: 'Open in Eaves',
+          claimBtn: 'Claim profile',
+          openGeneric: 'Open in the Eaves app',
+          openBtn: 'Open Eaves',
           playStore: 'Get it on Google Play',
           appStore: 'Download on the App Store',
           getApp: 'Download Eaves',
-          site: 'Go to eaves.be',
-          installHint: 'Don\u2019t have the app yet? Install it, then come back to this page and tap \u201cOpen in Eaves\u201d. Your link stays valid.',
-          inAppTip: 'Tip: if the button doesn\u2019t work, tap the menu (\u22EE or \u22EF) and choose \u201cOpen in browser\u201d.',
-          notOpened: 'Eaves didn\u2019t open? Install the app, then tap \u201cOpen in Eaves\u201d again.',
-          claimed: 'This profile has already been claimed. Questions? Email help@eaves.be.'
+          notInstalled: 'Eaves isn\u2019t installed yet. Install the app, then tap your link again.',
+          inAppNote: 'Already installed? Open this page in your browser (\u22EE or \u22EF menu).',
+          desktop: 'Open this link on your phone.',
+          claimed: 'This profile has already been claimed.',
+          claimedHelp: 'Questions? Email help@eaves.be.'
         },
         nl: {
-          genericTitle: 'Open dit in de Eaves-app',
-          genericSub: 'Deze link werkt in de Eaves-app.',
-          claimTitle: 'Is dit jouw profiel?',
+          claimGeneric: 'Claim je profiel',
           claimNamed: 'Claim {name}',
-          claimArtist: 'Open deze link in de Eaves-app om je artiestenprofiel te claimen.',
-          claimOrganizer: 'Open deze link in de Eaves-app om je organisatieprofiel te claimen.',
-          open: 'Open in Eaves',
+          claimBtn: 'Claim profiel',
+          openGeneric: 'Open in de Eaves-app',
+          openBtn: 'Open Eaves',
           playStore: 'Download via Google Play',
           appStore: 'Download in de App Store',
           getApp: 'Download Eaves',
-          site: 'Naar eaves.be',
-          installHint: 'Nog geen app? Installeer hem en kom terug naar deze pagina: tik dan op \u201cOpen in Eaves\u201d. Je link blijft geldig.',
-          inAppTip: 'Tip: werkt de knop niet? Tik op de menuknop (\u22EE of \u22EF) en kies \u201cOpenen in browser\u201d.',
-          notOpened: 'Eaves ging niet open? Installeer de app en tik daarna opnieuw op \u201cOpen in Eaves\u201d.',
-          claimed: 'Dit profiel is al geclaimd. Vragen? Mail help@eaves.be.'
+          notInstalled: 'Eaves is nog niet ge\u00EFnstalleerd. Installeer de app en tik daarna opnieuw op je link.',
+          inAppNote: 'Al ge\u00EFnstalleerd? Open deze pagina in je browser (\u22EE of \u22EF menu).',
+          desktop: 'Open deze link op je telefoon.',
+          claimed: 'Dit profiel is al geclaimd.',
+          claimedHelp: 'Vragen? Mail help@eaves.be.'
         }
       };
 
@@ -280,8 +196,9 @@
       var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
       var isAndroid = /Android/.test(ua);
       var isMobile = isIOS || isAndroid;
-      // In-app browsers (Messenger, Instagram, Facebook, ...) rarely hand links
-      // over to an installed app, so they get an extra tip.
+      // In-app browsers (Messenger, Instagram, Facebook, ...) often block the
+      // hand-over to an installed app, so "not opened" is not proof that the
+      // app is missing there.
       var isInAppBrowser = /FBAN|FBAV|FB_IAB|Messenger|Instagram|Snapchat|TikTok|musical_ly|LinkedInApp|Line\//i.test(ua);
 
       // ── Deep link ──────────────────────────────────────────────────────────
@@ -304,13 +221,15 @@
         return PLAY_URL + '&referrer=' + encodeURIComponent('claim=' + encodeURIComponent(path));
       }
 
-      // Android: an intent URL opens the app when it is installed and falls
-      // back to the Play Store when it is not — one tap, no guessing.
+      // Android: an intent URL opens the app when it is installed. When it is
+      // not, the browser navigates to the fallback — this same page with
+      // #install, which switches the page to its "install first" state.
       function androidIntentUrl() {
+        var fallback = window.location.origin + path + search + '#install';
         return 'intent://' + deepPath +
           '#Intent;scheme=' + APP_SCHEME +
           ';package=' + ANDROID_PACKAGE +
-          ';S.browser_fallback_url=' + encodeURIComponent(androidStoreUrl()) +
+          ';S.browser_fallback_url=' + encodeURIComponent(fallback) +
           ';end';
       }
 
@@ -318,77 +237,99 @@
 
       // ── Elements ───────────────────────────────────────────────────────────
       var el = function (id) { return document.getElementById(id); };
-      var openBtn = el('openBtn');
-      var storeBtn = el('storeBtn');
-      var siteLink = el('siteLink');
-      var installHint = el('installHint');
-      var notOpened = el('notOpened');
-      var inAppTip = el('inAppTip');
+      var logo = el('logo');
+      var heading = el('heading');
+      var note = el('note');
+      var inAppNote = el('inAppNote');
+      var claimBtn = el('claimBtn');
+      var installBtn = el('installBtn');
 
-      // ── Text ───────────────────────────────────────────────────────────────
-      if (claimMatch) {
-        el('heading').textContent = t.claimTitle;
-        el('subtext').textContent = claimKind === 'artist' ? t.claimArtist : t.claimOrganizer;
-        // A claim page has one job — no detour to the website.
-        siteLink.hidden = true;
-      } else {
-        el('heading').textContent = t.genericTitle;
-        el('subtext').textContent = t.genericSub;
-        siteLink.textContent = t.site;
+      // ── State ──────────────────────────────────────────────────────────────
+      // 'ready'   : one button — claim / open the app
+      // 'install' : the app did not open — warn once, then send to the store
+      // 'desktop' : no phone — only a download button
+      // 'claimed' : profile already taken — message only
+      var state = 'ready';
+      var leftPage = false;
+
+      function render() {
+        var install = state === 'install';
+        claimBtn.hidden = state !== 'ready';
+        installBtn.hidden = !(install || state === 'desktop');
+        note.hidden = !(install || state === 'desktop' || state === 'claimed');
+        inAppNote.hidden = !(install && isInAppBrowser);
+
+        if (install) note.textContent = t.notInstalled;
+        if (state === 'desktop') note.textContent = t.desktop;
+        if (state === 'claimed') note.textContent = t.claimedHelp;
       }
-      openBtn.textContent = t.open;
-      installHint.textContent = t.installHint;
-      notOpened.textContent = t.notOpened;
 
-      // ── Buttons per platform ───────────────────────────────────────────────
+      function setState(next) {
+        if (state === 'claimed' || state === 'desktop' || state === next) return;
+        state = next;
+        render();
+      }
+
+      // ── Text and links ─────────────────────────────────────────────────────
+      heading.textContent = claimMatch ? t.claimGeneric : t.openGeneric;
+      claimBtn.textContent = claimMatch ? t.claimBtn : t.openBtn;
+      inAppNote.textContent = t.inAppNote;
+
       if (isAndroid) {
-        openBtn.href = androidIntentUrl();
-        storeBtn.href = androidStoreUrl();
-        storeBtn.textContent = t.playStore;
+        claimBtn.href = androidIntentUrl();
+        installBtn.href = androidStoreUrl();
+        installBtn.textContent = t.playStore;
       } else if (isIOS) {
-        openBtn.href = customSchemeUrl;
-        storeBtn.href = APP_STORE_URL;
-        storeBtn.textContent = t.appStore;
+        claimBtn.href = customSchemeUrl;
+        installBtn.href = APP_STORE_URL;
+        installBtn.textContent = t.appStore;
       } else {
-        // Desktop: opening an app makes no sense, so only offer the download.
-        openBtn.hidden = true;
-        installHint.hidden = true;
-        storeBtn.href = 'https://eaves.be/app';
-        storeBtn.textContent = t.getApp;
-        storeBtn.className = 'btn';
+        installBtn.href = 'https://eaves.be/app';
+        installBtn.textContent = t.getApp;
+        state = 'desktop';
       }
+      render();
 
-      if (isMobile && isInAppBrowser) {
-        inAppTip.textContent = t.inAppTip;
-        inAppTip.hidden = false;
-      }
-
-      // ── "It didn't open" detection ─────────────────────────────────────────
-      // When the app opens, the page is hidden (visibilitychange/pagehide). If
-      // it is still visible shortly after the tap, the app is most likely not
-      // installed, so the store button becomes the primary action.
+      // ── "The app did not open" detection ───────────────────────────────────
+      // When the app opens, the page is hidden. If it is still visible a moment
+      // after the tap, the app is most likely not installed. iOS gets longer
+      // because Safari first asks "Open in Eaves?".
       var notOpenedTimer = null;
 
-      function cancelNotOpened() {
+      function cancelTimer() {
         if (notOpenedTimer) { clearTimeout(notOpenedTimer); notOpenedTimer = null; }
       }
 
-      openBtn.addEventListener('click', function () {
-        cancelNotOpened();
+      claimBtn.addEventListener('click', function () {
+        cancelTimer();
         notOpenedTimer = setTimeout(function () {
-          if (document.hidden) return;
-          notOpened.hidden = false;
-          storeBtn.className = 'btn';
-          openBtn.className = 'btn secondary';
-        }, 1600);
+          if (!document.hidden) setState('install');
+        }, isIOS ? 2500 : 1800);
       });
 
       document.addEventListener('visibilitychange', function () {
-        if (document.hidden) cancelNotOpened();
+        if (document.hidden) {
+          cancelTimer();
+          if (state === 'install') leftPage = true;
+        } else if (state === 'install' && leftPage) {
+          // Back from the store (or from a dialog): offer the claim button again.
+          leftPage = false;
+          setState('ready');
+          if (window.location.hash === '#install') {
+            history.replaceState(null, '', path + search);
+          }
+        }
       });
-      window.addEventListener('pagehide', cancelNotOpened);
+      window.addEventListener('pagehide', cancelTimer);
 
-      // ── Optional profile preview (name, photo, already-claimed) ────────────
+      // Android fallback from the intent URL lands here with #install.
+      function checkHash() {
+        if (window.location.hash === '#install') setState('install');
+      }
+      window.addEventListener('hashchange', checkHash);
+      checkHash();
+
+      // ── Profile name and photo ─────────────────────────────────────────────
       if (PROFILE_PREVIEW && claimMatch && UUID_RE.test(claimId)) {
         var table = claimKind === 'artist' ? 'artist_directory_profiles' : 'organizer_directory_profiles';
         var nameColumn = claimKind === 'artist' ? 'name' : 'organization_name';
@@ -409,25 +350,21 @@
             var row = rows && rows[0];
             if (!row) return;
 
-            var profileName = row[nameColumn] || '';
-
             // Many curated profiles have no photo; the name in the heading is
             // the main element, the photo is a bonus.
             if (typeof row.image_url === 'string' && /^https:\/\//.test(row.image_url)) {
-              var img = el('profileImg');
-              img.src = row.image_url;
-              img.hidden = false;
-              el('profile').hidden = false;
+              logo.src = row.image_url;
+              logo.className = 'logo photo';
             }
 
             if (row.claimed_by_user_id) {
-              el('heading').textContent = t.claimed;
-              el('subtext').hidden = true;
-              openBtn.hidden = true;
-              installHint.hidden = true;
-            } else if (profileName) {
+              // Already taken: message only, no button.
+              state = 'claimed';
+              heading.textContent = t.claimed;
+              render();
+            } else if (row[nameColumn]) {
               // textContent only — the name is data, never markup.
-              el('heading').textContent = t.claimNamed.replace('{name}', profileName);
+              heading.textContent = t.claimNamed.replace('{name}', row[nameColumn]);
             }
           })
           .catch(function () { /* the page works without the preview */ });

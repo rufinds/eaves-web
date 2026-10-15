@@ -1,0 +1,338 @@
+:root {
+  --bg:         #121212;
+  --bg-raised:  #1A1A1A;
+  --red:        #8B0000;
+  --red-bright: #B8291F;
+  --text:       #F2F0ED;
+  --text-muted: #8A8A8A;
+  --border:     #2A2A2A;
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 60% 30% at 50% 0%, rgba(139, 0, 0, 0.28), transparent 70%) no-repeat,
+    var(--bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a { color: inherit; }
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--red-bright);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+img { max-width: 100%; display: block; }
+
+/* ---------- Top bar ---------- */
+
+.topbar {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.brand img { border-radius: 8px; }
+
+.topbar .all {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.topbar .all:hover { color: var(--text); }
+
+/* ---------- Page ---------- */
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8px 24px 48px;
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  margin-bottom: 28px;
+}
+
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 6vw, 40px);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 20px;
+  overflow-wrap: anywhere;
+}
+
+h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+}
+
+.lead {
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: -8px 0 32px;
+  max-width: 520px;
+}
+
+/* ---------- Buttons ---------- */
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 24px;
+  border-radius: 12px;
+  background: var(--red-bright);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.15s ease;
+}
+
+.btn:hover { background: #d13a2f; }
+
+.btn.secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn.secondary:hover { border-color: var(--text-muted); }
+
+.install-hint {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: -8px 0 28px;
+}
+
+/* ---------- Facts ---------- */
+
+.facts {
+  margin: 0 0 24px;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.facts > div {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+}
+
+.facts dt {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.facts dd {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.facts dd a { color: var(--text-muted); }
+
+.facts dd a:hover { color: var(--text); }
+
+.tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+.tags li {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ---------- Content blocks ---------- */
+
+.block {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.lineup {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lineup li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 16px;
+}
+
+.lineup li:last-child { border-bottom: 0; }
+
+.lineup time {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.about p {
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0 0 14px;
+  max-width: 62ch;
+  overflow-wrap: anywhere;
+}
+
+.pitch p {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 52ch;
+}
+
+/* ---------- Overview ---------- */
+
+.day { margin-top: 36px; }
+
+.day h2 { color: var(--text-muted); font-size: 16px; font-weight: 500; }
+
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.card:hover .card-title { color: #fff; text-decoration: underline; }
+
+.card-time {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.card-meta { color: var(--text-muted); font-size: 14px; }
+
+.card-price { color: var(--text-muted); font-size: 14px; white-space: nowrap; }
+
+/* ---------- Footer ---------- */
+
+.foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 24px 32px;
+  border-top: 1px solid var(--border);
+}
+
+.store-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.store-badges img { height: 44px; width: auto; }
+
+.foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+.foot-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.foot-links a:hover { color: var(--text); }
+
+@media (max-width: 480px) {
+  .facts > div { grid-template-columns: 80px 1fr; gap: 12px; }
+  .card { grid-template-columns: 48px 1fr; }
+  .card-price { grid-column: 2; }
+}

@@ -1,0 +1,77 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Hourly refresh so new and expired events show up without a manual deploy.
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Assemble static files
+        run: |
+          mkdir _site
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' --exclude='scripts' ./ _site/
+
+      - name: Generate event pages
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          OUT_DIR: _site
+        run: node scripts/build-events.mjs
+
+      # Universal links break silently when these files are missing.
+      - name: Verify required files
+        run: |
+          test -f _site/.well-known/apple-app-site-association
+          test -f _site/.well-known/assetlinks.json
+          test -f _site/CNAME
+          test -f _site/404.html
+
+      # Hidden directories such as .well-known are dropped from the artifact
+      # unless include-hidden-files is set.
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Check that universal link files are served
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fsS https://eaves.be/.well-known/assetlinks.json > /dev/null \
+              && curl -fsS https://eaves.be/.well-known/apple-app-site-association > /dev/null; then
+              echo "Universal link files are served."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Universal link files are not served from eaves.be/.well-known" >&2
+          exit 1
