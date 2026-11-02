@@ -39,6 +39,17 @@ const HOME_MARKER = '<!--EVENTS-->';
 const HOME_STRIP_MIN = 3;
 const HOME_STRIP_MAX = 5;
 
+// Static pages that are listed in the sitemap next to the event pages.
+const STATIC_PAGES = [
+  '/',
+  '/events/',
+  '/for-hosts/',
+  '/for-artists/',
+  '/for-venues/',
+  '/privacy.html',
+  '/terms.html',
+];
+
 // Only covers hosted by us are used as visible cover and og:image. Covers
 // hotlinked from third-party sites are ignored.
 const TRUSTED_IMAGE_HOSTS = new Set([new URL(SUPABASE_URL).host]);
@@ -308,7 +319,7 @@ ${extraHead}
 </div></header>
 ${body}
 <footer class="foot"><div class="wrap">
-  <nav aria-label="Footer"><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms of service</a><a href="/events/">Upcoming events</a><a href="/delete-account.html">Delete account</a><a href="https://instagram.com/eaves.app">Instagram</a></nav>
+  <nav aria-label="Footer"><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms of service</a><a href="/events/">Upcoming events</a><a href="/for-hosts/">For hosts</a><a href="/for-artists/">For artists</a><a href="/for-venues/">For venues</a><a href="/delete-account.html">Delete account</a><a href="https://instagram.com/eaves.app">Instagram</a></nav>
   <a href="mailto:help@eaves.be">help@eaves.be</a>
 </div></footer>
 ${script}
@@ -498,10 +509,7 @@ function renderEventsStrip(events) {
 
 function renderSitemap(events) {
   const urls = [
-    { loc: `${SITE_ORIGIN}/` },
-    { loc: `${SITE_ORIGIN}/events/` },
-    { loc: `${SITE_ORIGIN}/privacy.html` },
-    { loc: `${SITE_ORIGIN}/terms.html` },
+    ...STATIC_PAGES.map((page) => ({ loc: `${SITE_ORIGIN}${page}` })),
     ...events.map((ev) => ({
       loc: `${SITE_ORIGIN}/event/${ev.id}/`,
       lastmod: ev.updatedAt ? ev.updatedAt.toISOString().slice(0, 10) : undefined,

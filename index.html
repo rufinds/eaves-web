@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eaves — Events, parties and nightlife in Leuven</title>
-<meta name="description" content="Find club nights, student parties and concerts in Leuven. Check the lineup, see which friends are going and plan your night.">
+<title>Eaves — Discover music events and nightlife in Leuven</title>
+<meta name="description" content="Discover club nights, student parties, concerts and more in Leuven. Check the lineup, see who’s going and find your next night out with Eaves. Free.">
 <meta name="theme-color" content="#121212">
 <meta name="apple-itunes-app" content="app-id=6794866218">
 <link rel="canonical" href="https://eaves.be/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Eaves — Leuven nightlife. One place.">
-<meta property="og:description" content="Find club nights, student parties and concerts in Leuven. See which friends are going.">
+<meta property="og:description" content="Discover what’s on in Leuven, see who’s playing and which friends are going.">
 <meta property="og:url" content="https://eaves.be/">
-<!-- Temporary: replace with a 1200x630 og-image.png when available. -->
+<!-- Fallback image until a 1200x630 og-image.png exists in /assets -->
 <meta property="og:image" content="https://eaves.be/assets/scene-banner.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/assets/icon.png">
@@ -21,19 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"Eaves","applicationCategory":"LifestyleApplication","operatingSystem":"iOS, Android","url":"https://eaves.be/","image":"https://eaves.be/assets/icon.png","description":"Nightlife and events app for Leuven."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-{"@type":"Question","name":"Is Eaves available on iPhone and Android?","acceptedAnswer":{"@type":"Answer","text":"Yes. Download Eaves from the App Store or Google Play."}},
-{"@type":"Question","name":"Which cities does Eaves cover?","acceptedAnswer":{"@type":"Answer","text":"Eaves is live in Leuven. More cities may follow."}},
-{"@type":"Question","name":"How do I add my event, venue or artist profile?","acceptedAnswer":{"@type":"Answer","text":"Create an account in the app and request the Host, Artist or Venue Owner role. Venue owners are verified before approval."}},
-{"@type":"Question","name":"Do I have to share my location?","acceptedAnswer":{"@type":"Answer","text":"No. Location access is optional and only used to show events and venues near you."}},
-{"@type":"Question","name":"Can I delete my account?","acceptedAnswer":{"@type":"Answer","text":"Yes, in the app under Account, Privacy settings, Delete account, or by emailing help@eaves.be."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"Eaves","applicationCategory":"LifestyleApplication","operatingSystem":"iOS, Android","url":"https://eaves.be/","image":"https://eaves.be/assets/icon.png","description":"Discover nightlife and music events in Leuven with Eaves.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
 </head>
 <body>
 <header class="top"><div class="wrap">
   <a class="brand" href="/"><img src="/assets/icon.png" alt="" width="34" height="34">Eaves</a>
   <nav class="nav" aria-label="Main">
-    <a href="#features">Features</a><a href="#events">Events</a><a href="#creators">For creators</a><a href="#faq">FAQ</a>
+    <a href="#features">Features</a><a href="/events/">Events</a><a href="#creators">For creators</a><a href="#faq">FAQ</a>
   </nav>
   <a class="btn sm" href="/app?from=header">Download</a>
 </div></header>
@@ -43,12 +37,11 @@
   <div>
     <span class="pill">Leuven nightlife. One place.</span>
     <h1>Know before<br><span class="red">you go.</span></h1>
-    <p class="lead">Eaves shows what’s on in Leuven tonight: club nights, student parties and concerts. Check the lineup, see which friends are going, then decide.</p>
+    <p class="lead">From underground nights and club parties to live music, jazz and festivals. Discover what’s on in Leuven, see who’s playing and which friends are going.</p>
     <div class="row badges">
       <a href="https://apps.apple.com/app/id6794866218"><img src="/assets/store-badge-apple.svg" alt="Download on the App Store" height="46"></a>
       <a href="https://play.google.com/store/apps/details?id=com.eaves.app"><img src="/assets/store-badge-google.svg" alt="Get it on Google Play" height="46"></a>
     </div>
-    <!-- Desktop only: lets visitors continue on their phone. Generate with: npx qrcode -t svg -o assets/qr-app.svg "https://eaves.be/app?from=qr" -->
     <div class="qr"><img src="/assets/qr-app.svg" alt="QR code to download Eaves" width="92" height="92"><span>On a computer? Scan the code with your phone to get the app.</span></div>
   </div>
   <div class="device"><img src="/assets/phone-home-720.webp" srcset="/assets/phone-home-480.webp 480w, /assets/phone-home-720.webp 720w" sizes="300px" width="720" height="1360" alt="Eaves home screen with tonight’s event and a For you feed based on friends, follows and genres" fetchpriority="high"></div>
@@ -57,14 +50,14 @@
 <!--EVENTS-->
 
 <section class="features" id="features"><div class="wrap">
-  <h2>Plan your night in three taps</h2>
+  <h2>Everything you need for a night out</h2>
   <div class="stage">
     <div>
-      <div class="step on" data-i="0"><h3>Know the lineup</h3><p>See every stage, artist and set time before you leave home, and listen to a preview.</p>
+      <div class="step on" data-i="0"><h3>Know the lineup</h3><p>See who’s playing, where and when. Explore artists, check out their music and know what to expect before you arrive.</p>
         <div class="device"><img src="/assets/phone-lineup-720.webp" width="720" height="1360" loading="lazy" alt="Eaves lineup with stages, artists and set times"></div></div>
-      <div class="step" data-i="1"><h3>See who’s going</h3><p>Check how many people are going or interested and which friends are among them, so you never walk in alone. Tap Going or Interested, or invite friends.</p>
+      <div class="step" data-i="1"><h3>See who’s going</h3><p>See who’s going or interested, including your friends. Going solo or meeting up? You decide.</p>
         <div class="device"><img src="/assets/phone-details-720.webp" width="720" height="1360" loading="lazy" alt="Eaves event details with date, price, age limit and friends attending"></div></div>
-      <div class="step" data-i="2"><h3>Follow what you love</h3><p>Follow artists, venues and hosts and see their new events in your feed, next to what your friends are doing.</p>
+      <div class="step" data-i="2"><h3>Follow what you love</h3><p>Follow your favourite artists, venues and hosts. Their upcoming events will show up in your feed, alongside what your friends are up to.</p>
         <div class="device"><img src="/assets/phone-following-720.webp" width="720" height="1360" loading="lazy" alt="Eaves feed with events from friends and from artists, venues and hosts you follow"></div></div>
     </div>
     <div class="sticky" aria-hidden="true">
@@ -74,34 +67,37 @@
     </div>
   </div>
   <div class="extras">
-    <div class="card"><h3>Host your own</h3><p>Create private events like pre-drinks and house parties and invite your inner circle.</p></div>
-    <div class="card"><h3>You decide what you share</h3><p>Location is optional. You choose who sees your profile, friends and the events you go to.</p></div>
+    <div class="card"><h3>Never miss a night</h3><p>Save your favourite searches and get notified when something new pops up. We’ll also remind you about events you’re going to.</p></div>
+    <div class="card"><h3>Find your kind of night</h3><p>Looking for something specific? Filter by genre, date, price or event type. Save your searches for later.</p></div>
+    <div class="card"><h3>Your own little party</h3><p>From pre-drinks to house parties, create private events and invite your friends.</p></div>
+    <div class="card"><h3>Your privacy, your choice</h3><p>Choose what you share and who gets to see it. Your profile, friends list and event activity are yours to control.</p></div>
   </div>
 </div></section>
 
 <section class="creators" id="creators"><div class="wrap">
   <div>
-    <h2>Built for the people behind the night</h2>
-    <div class="role"><h3>Hosts</h3><p>Create events, build the lineup, invite artists and see who’s coming.</p></div>
-    <div class="role"><h3>Artists</h3><p>Build a profile, share your sound and join lineups.</p></div>
-    <div class="role"><h3>Venues</h3><p>Show your space, list your events and connect with hosts and artists.</p></div>
-    <p class="muted" style="margin-top:20px">Choose your role in the app. Venue owners are verified before approval.</p>
+    <h2>Made for the people who make it happen.</h2>
+    <a class="role role-link" href="/for-hosts/"><h3>Hosts</h3><p>Create events, put together your lineup, invite artists and keep track of who’s coming.</p></a>
+    <a class="role role-link" href="/for-artists/"><h3>Artists</h3><p>From bedroom DJs to local bands. Create your profile, share your music and get on the lineup.</p></a>
+    <a class="role role-link" href="/for-venues/"><h3>Venues</h3><p>Showcase your venue, connect with hosts and artists, and manage event requests.</p></a>
+    <p class="muted" style="margin-top:20px">Free for everyone. Hosts and artists can get started right away. Venue owner requests are reviewed by our team.</p>
   </div>
   <div class="device"><img src="/assets/phone-roles-720.webp" width="720" height="1360" loading="lazy" alt="Eaves role selection with Explorer, Artist, Host and Venue Owner"></div>
 </div></section>
 
 <section class="faq" id="faq"><div class="wrap">
-  <h2>Questions</h2>
-  <details><summary>Is Eaves available on iPhone and Android?</summary><p>Yes. Download Eaves from the App Store or Google Play.</p></details>
-  <details><summary>Which cities does Eaves cover?</summary><p>Eaves is live in Leuven. More cities may follow.</p></details>
-  <details><summary>How do I add my event, venue or artist profile?</summary><p>Create an account in the app and request the Host, Artist or Venue Owner role. Venue owners are verified before approval.</p></details>
-  <details><summary>Do I have to share my location?</summary><p>No. Location access is optional and only used to show events and venues near you.</p></details>
-  <details><summary>Can I delete my account?</summary><p>Yes, in the app under Account, Privacy settings, Delete account, or by emailing help@eaves.be. See the <a href="/delete-account.html">delete account page</a>.</p></details>
+  <h2>Got questions?</h2>
+  <details><summary>Is Eaves free?</summary><p>Yes. Eaves is free for everyone: users, hosts, artists and venues.</p></details>
+  <details><summary>Which city does Eaves cover?</summary><p>Eaves is all about Leuven nightlife: club nights, student parties, concerts, jazz nights, festivals and more. More cities may follow.</p></details>
+  <details><summary>Is Eaves available on iPhone and Android?</summary><p>Yes. Download Eaves from the App Store or Google Play. The app is available in English and Dutch.</p></details>
+  <details><summary>Do I need an account?</summary><p>You can browse upcoming events on this website without an account. In the app, you’ll need a free account to say Going or Interested, add friends, follow artists, venues and hosts, and get notifications.</p></details>
+  <details><summary>Who can see which events I go to?</summary><p>You decide. You can choose who sees your profile, friends list, following list, RSVPs and searches: everyone, friends only or no one.</p></details>
+  <details><summary>Can I add my own events?</summary><p>Yes. Choose Host in the app to create public events or private events for your friends. Artists can also create a profile and join lineups. Venue owner requests are reviewed by our team. Read more for <a href="/for-hosts/">hosts</a>, <a href="/for-artists/">artists</a> and <a href="/for-venues/">venues</a>.</p></details>
 </div></section>
 
 <section class="final">
   <h2>Your night starts here.</h2>
-  <p>Techno, house, drum &amp; bass, student parties and concerts: download Eaves and see what’s on in Leuven tonight.</p>
+  <p>Find your next favourite night, discover new artists and see what’s on in Leuven. Download Eaves and find out what’s out there.</p>
   <div class="row badges">
     <a href="https://apps.apple.com/app/id6794866218"><img src="/assets/store-badge-apple.svg" alt="Download on the App Store" height="46"></a>
     <a href="https://play.google.com/store/apps/details?id=com.eaves.app"><img src="/assets/store-badge-google.svg" alt="Get it on Google Play" height="46"></a>
@@ -110,7 +106,7 @@
 </main>
 
 <footer class="foot"><div class="wrap">
-  <nav aria-label="Footer"><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms of service</a><a href="/events/">Upcoming events</a><a href="/delete-account.html">Delete account</a><a href="https://instagram.com/eaves.app">Instagram</a></nav>
+  <nav aria-label="Footer"><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms of service</a><a href="/events/">Upcoming events</a><a href="/for-hosts/">For hosts</a><a href="/for-artists/">For artists</a><a href="/for-venues/">For venues</a><a href="/delete-account.html">Delete account</a><a href="https://instagram.com/eaves.app">Instagram</a></nav>
   <a href="mailto:help@eaves.be">help@eaves.be</a>
 </div></footer>
 <script src="/assets/site.js" defer></script>

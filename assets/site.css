@@ -161,3 +161,19 @@ details p{margin:14px 0 0;color:var(--muted)}
 .legal th,.legal td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;color:var(--muted)}
 .legal th{background:var(--surface);color:var(--text)}
 .legal code{background:var(--surface);padding:1px 5px;border-radius:3px}
+
+/* Role pages */
+.rp-steps{list-style:none;margin:24px 0 0;padding:0;counter-reset:s}
+.rp-steps li{counter-increment:s;display:grid;grid-template-columns:56px 1fr;gap:16px;padding:20px 0;border-top:1px solid var(--line);color:var(--muted)}
+.rp-steps li::before{content:counter(s);font:700 44px/1 var(--head);color:var(--red-text)}
+.rp-steps strong{display:block;color:var(--text);font-size:18px;margin-bottom:2px}
+.more{padding:0 0 72px}
+.more h2{font-size:clamp(32px,4vw,44px)}
+a.card{display:block;text-decoration:none;color:inherit;transition:border-color .15s}
+a.card:hover{border-color:var(--muted)}
+a.card h3{margin-bottom:6px}
+.role-link{display:block;text-decoration:none;color:inherit}
+.role-link h3::after{content:' →';color:var(--red-text)}
+.role-link:hover h3{color:var(--red-text)}
+
+.hero h1.rp{font-size:clamp(46px,7.5vw,92px)}
