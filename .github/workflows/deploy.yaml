@@ -30,13 +30,20 @@ jobs:
       - name: Assemble static files
         run: |
           mkdir _site
-          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' --exclude='scripts' ./ _site/
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' --exclude='_site_test' --exclude='scripts' --exclude='screens' --exclude='node_modules' ./ _site/
 
       - name: Generate event pages
         env:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           OUT_DIR: _site
         run: node scripts/build-events.mjs
+
+      - name: Verify events marker was replaced
+        run: |
+          if grep -q '<!--EVENTS-->' _site/index.html; then
+            echo "Events marker still present in index.html" >&2
+            exit 1
+          fi
 
       # Universal links break silently when these files are missing.
       - name: Verify required files

@@ -2,673 +2,117 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eaves — Nightlife in Leuven</title>
-<meta name="description" content="Eaves is a nightlife and events discovery app for Leuven — live now. See where your friends are going, discover lineups, and never miss a night out.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eaves — Events, parties and nightlife in Leuven</title>
+<meta name="description" content="Find club nights, student parties and concerts in Leuven. Check the lineup, see which friends are going and plan your night.">
 <meta name="theme-color" content="#121212">
-
+<meta name="apple-itunes-app" content="app-id=6794866218">
+<link rel="canonical" href="https://eaves.be/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Eaves — Leuven Nightlife. One Place.">
-<meta property="og:description" content="A nightlife and events discovery app for Leuven — download now.">
-<meta property="og:image" content="/assets/scene-banner.png">
+<meta property="og:title" content="Eaves — Leuven nightlife. One place.">
+<meta property="og:description" content="Find club nights, student parties and concerts in Leuven. See which friends are going.">
+<meta property="og:url" content="https://eaves.be/">
+<!-- Temporary: replace with a 1200x630 og-image.png when available. -->
+<meta property="og:image" content="https://eaves.be/assets/scene-banner.png">
 <meta name="twitter:card" content="summary_large_image">
-
 <link rel="icon" type="image/png" href="/assets/icon.png">
 <link rel="apple-touch-icon" href="/assets/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:         #121212;
-    --bg-raised:  #1A1A1A;
-    --red:        #8B0000;
-    --red-bright: #B8291F;
-    --text:       #F2F0ED;
-    --text-muted: #8A8A8A;
-    --border:     #2A2A2A;
-  }
-
-  * { box-sizing: border-box; }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
-  }
-
-  /* ---------- Scroll reveal ---------- */
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
-
-  .reveal.visible {
-    opacity: 1;
-    transform: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-  }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  }
-
-  body { overflow-x: hidden; }
-
-  a { color: inherit; }
-
-  a:focus-visible,
-  button:focus-visible {
-    outline: 2px solid var(--red-bright);
-    outline-offset: 3px;
-    border-radius: 2px;
-  }
-
-  img { max-width: 100%; display: block; }
-
-  /* ---------- Hero ---------- */
-
-  .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 72px 24px 56px;
-    position: relative;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 60% 45% at 50% 0%, rgba(139,0,0,0.28), transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .hero > * { position: relative; z-index: 1; }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 36px;
-  }
-
-  .badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--red-bright);
-    box-shadow: 0 0 8px var(--red-bright);
-  }
-
-  .logo-wrap {
-    width: 148px;
-    height: 148px;
-    margin-bottom: 24px;
-  }
-
-  h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: clamp(40px, 8vw, 64px);
-    letter-spacing: -0.02em;
-    margin: 0 0 12px;
-  }
-
-  p.tagline {
-    font-size: clamp(16px, 3vw, 19px);
-    color: var(--text-muted);
-    margin: 0 0 4px;
-    max-width: 380px;
-  }
-
-  p.location {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin: 4px 0 0;
-  }
-
-  p.location strong { color: var(--text); font-weight: 500; }
-
-  /* ---------- CTA buttons ---------- */
-
-  .cta-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 32px;
-  }
-
-  .cta-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 28px;
-    border-radius: 12px;
-    background: var(--red-bright);
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    transition: background 0.15s ease;
-  }
-
-  .cta-btn:hover { background: #d13a2f; }
-
-  .cta-btn.secondary {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-
-  .cta-btn.secondary:hover { border-color: var(--text-muted); }
-
-  /* ---------- Equalizer divider (signature element) ---------- */
-
-  .eq-divider {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 5px;
-    height: 34px;
-    margin: 0 auto;
-    padding: 40px 0;
-  }
-
-  .eq-divider span {
-    width: 4px;
-    border-radius: 2px;
-    background: linear-gradient(to top, var(--red), var(--red-bright));
-    animation: eq-pulse 2.4s ease-in-out infinite;
-  }
-
-  .eq-divider span:nth-child(1) { height: 10px; animation-delay: -1.9s; }
-  .eq-divider span:nth-child(2) { height: 22px; animation-delay: -1.4s; }
-  .eq-divider span:nth-child(3) { height: 34px; animation-delay: -0.9s; }
-  .eq-divider span:nth-child(4) { height: 16px; animation-delay: -0.5s; }
-  .eq-divider span:nth-child(5) { height: 26px; animation-delay: -0.2s; }
-  .eq-divider span:nth-child(6) { height: 12px; animation-delay: -2.1s; }
-  .eq-divider span:nth-child(7) { height: 20px; animation-delay: -1.1s; }
-
-  @keyframes eq-pulse {
-    0%, 100% { transform: scaleY(0.35); opacity: 0.55; }
-    50%      { transform: scaleY(1);    opacity: 1; }
-  }
-
-  /* ---------- Features ---------- */
-
-  .features {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 24px 24px;
-  }
-
-  .feature {
-    display: flex;
-    align-items: center;
-    gap: 64px;
-    padding: 56px 0;
-  }
-
-  .feature:nth-of-type(even) { flex-direction: row-reverse; }
-
-  .feature-media {
-    flex: 0 0 auto;
-    width: 300px;
-  }
-
-  .feature-media img {
-    width: 100%;
-    height: auto;
-    border-radius: 20px;
-  }
-
-  .feature-text { flex: 1; min-width: 0; }
-
-  .eyebrow {
-    display: block;
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--red-bright);
-    font-weight: 600;
-    margin-bottom: 12px;
-  }
-
-  .feature-text h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(24px, 3.4vw, 32px);
-    margin: 0 0 14px;
-    letter-spacing: -0.01em;
-  }
-
-  .feature-text p {
-    color: var(--text-muted);
-    font-size: 16px;
-    line-height: 1.65;
-    max-width: 420px;
-    margin: 0;
-  }
-
-  @media (max-width: 760px) {
-    .feature,
-    .feature:nth-of-type(even) {
-      flex-direction: column;
-      gap: 28px;
-      text-align: center;
-      padding: 40px 0;
-    }
-    .feature-media { width: 240px; }
-    .feature-text p { margin: 0 auto; }
-  }
-
-  /* ---------- Lead statement ---------- */
-
-  .lead {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 0 24px 24px;
-    text-align: center;
-  }
-
-  .lead h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(26px, 4vw, 36px);
-    letter-spacing: -0.01em;
-    margin: 0 0 16px;
-  }
-
-  .lead p {
-    color: var(--text-muted);
-    font-size: 17px;
-    line-height: 1.65;
-    margin: 0;
-  }
-
-  /* ---------- Feature groups ---------- */
-
-  .group-head {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 48px 24px 8px;
-  }
-
-  .group-head .eyebrow { margin-bottom: 0; }
-
-  /* ---------- Mini cards (text-only features) ---------- */
-
-  .mini-grid {
-    max-width: 1080px;
-    margin: 8px auto 0;
-    padding: 8px 24px 32px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-
-  .mini-card {
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-  }
-
-  .mini-card h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 18px;
-    margin: 0 0 8px;
-    letter-spacing: -0.01em;
-  }
-
-  .mini-card p {
-    color: var(--text-muted);
-    font-size: 15px;
-    line-height: 1.6;
-    margin: 0;
-  }
-
-  @media (max-width: 640px) {
-    .mini-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ---------- Built for the whole scene ---------- */
-
-  .scene {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 56px 24px;
-    text-align: center;
-  }
-
-  .scene .eyebrow { text-align: center; }
-
-  .scene h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(22px, 3.4vw, 30px);
-    max-width: 560px;
-    margin: 0 auto 32px;
-    letter-spacing: -0.01em;
-  }
-
-  .scene-banner {
-    max-width: 480px;
-    margin: 0 auto 40px;
-  }
-
-  .scene-banner img {
-    width: 100%;
-    height: auto;
-    border-radius: 20px;
-  }
-
-  .scene-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    text-align: left;
-  }
-
-  .scene-card {
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-  }
-
-  .scene-card h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 18px;
-    margin: 0 0 8px;
-    color: var(--red-bright);
-  }
-
-  .scene-card p {
-    color: var(--text-muted);
-    font-size: 15px;
-    line-height: 1.6;
-    margin: 0;
-  }
-
-  @media (max-width: 760px) {
-    .scene-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ---------- Bottom CTA ---------- */
-
-  .cta-section {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 24px 24px 64px;
-    text-align: center;
-  }
-
-  .cta-section h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(24px, 3.6vw, 32px);
-    margin: 0 0 24px;
-    letter-spacing: -0.01em;
-  }
-
-  /* ---------- Privacy note ---------- */
-
-  .privacy-note {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 24px 64px;
-    text-align: center;
-  }
-
-  .privacy-note p {
-    color: var(--text-muted);
-    font-size: 14px;
-    line-height: 1.7;
-    margin: 0;
-  }
-
-  .privacy-note strong { color: var(--text); font-weight: 600; }
-
-  /* ---------- Footer ---------- */
-
-  footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding: 28px 24px 32px;
-    border-top: 1px solid var(--border);
-  }
-
-  .store-badges {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-
-  .store-badges img {
-    height: 44px;
-    width: auto;
-  }
-
-  .acronym-line {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    text-align: center;
-    margin-bottom: 4px;
-  }
-
-  .acronym-line strong {
-    color: var(--red-bright);
-    font-weight: 600;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  footer a {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 13px;
-    transition: color 0.15s ease;
-  }
-
-  footer a:hover { color: var(--text); }
-
-  .contact { font-size: 12px; color: #5A5A5A; }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"Eaves","applicationCategory":"LifestyleApplication","operatingSystem":"iOS, Android","url":"https://eaves.be/","image":"https://eaves.be/assets/icon.png","description":"Nightlife and events app for Leuven."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is Eaves available on iPhone and Android?","acceptedAnswer":{"@type":"Answer","text":"Yes. Download Eaves from the App Store or Google Play."}},
+{"@type":"Question","name":"Which cities does Eaves cover?","acceptedAnswer":{"@type":"Answer","text":"Eaves is live in Leuven. More cities may follow."}},
+{"@type":"Question","name":"How do I add my event, venue or artist profile?","acceptedAnswer":{"@type":"Answer","text":"Create an account in the app and request the Host, Artist or Venue Owner role. Venue owners are verified before approval."}},
+{"@type":"Question","name":"Do I have to share my location?","acceptedAnswer":{"@type":"Answer","text":"No. Location access is optional and only used to show events and venues near you."}},
+{"@type":"Question","name":"Can I delete my account?","acceptedAnswer":{"@type":"Answer","text":"Yes, in the app under Account, Privacy settings, Delete account, or by emailing help@eaves.be."}}]}</script>
 </head>
 <body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><img src="/assets/icon.png" alt="" width="34" height="34">Eaves</a>
+  <nav class="nav" aria-label="Main">
+    <a href="#features">Features</a><a href="#events">Events</a><a href="#creators">For creators</a><a href="#faq">FAQ</a>
+  </nav>
+  <a class="btn sm" href="/app?from=header">Download</a>
+</div></header>
 
-  <section class="hero">
-    <span class="badge">Live now in Leuven</span>
-    <div class="logo-wrap">
-      <img src="/assets/icon.png" alt="Eaves logo">
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="pill">Leuven nightlife. One place.</span>
+    <h1>Know before<br><span class="red">you go.</span></h1>
+    <p class="lead">Eaves shows what’s on in Leuven tonight: club nights, student parties and concerts. Check the lineup, see which friends are going, then decide.</p>
+    <div class="row badges">
+      <a href="https://apps.apple.com/app/id6794866218"><img src="/assets/store-badge-apple.svg" alt="Download on the App Store" height="46"></a>
+      <a href="https://play.google.com/store/apps/details?id=com.eaves.app"><img src="/assets/store-badge-google.svg" alt="Get it on Google Play" height="46"></a>
     </div>
-    <h1>Eaves</h1>
-    <p class="tagline">Leuven Nightlife. One Place.</p>
-    <p class="location">Available now in <strong>Leuven</strong>.</p>
-    <div class="cta-row">
-      <a class="cta-btn" href="https://eaves.be/app">Download Eaves</a>
-    </div>
-  </section>
-
-  <div class="eq-divider" aria-hidden="true">
-    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <!-- Desktop only: lets visitors continue on their phone. Generate with: npx qrcode -t svg -o assets/qr-app.svg "https://eaves.be/app?from=qr" -->
+    <div class="qr"><img src="/assets/qr-app.svg" alt="QR code to download Eaves" width="92" height="92"><span>On a computer? Scan the code with your phone to get the app.</span></div>
   </div>
+  <div class="device"><img src="/assets/phone-home-720.webp" srcset="/assets/phone-home-480.webp 480w, /assets/phone-home-720.webp 720w" sizes="300px" width="720" height="1360" alt="Eaves home screen with tonight’s event and a For you feed based on friends, follows and genres" fetchpriority="high"></div>
+</div></section>
 
-  <section class="lead reveal">
-    <h2>Eaves is where nightlife gets social.</h2>
-    <p>Find out what's happening tonight — from club nights and concerts to hidden gems around the city. See where your friends are heading, invite them to join you, and never show up to a venue alone.</p>
-  </section>
+<!--EVENTS-->
 
-  <main class="features">
-
-    <div class="group-head">
-      <span class="eyebrow">Discover the night</span>
+<section class="features" id="features"><div class="wrap">
+  <h2>Plan your night in three taps</h2>
+  <div class="stage">
+    <div>
+      <div class="step on" data-i="0"><h3>Know the lineup</h3><p>See every stage, artist and set time before you leave home, and listen to a preview.</p>
+        <div class="device"><img src="/assets/phone-lineup-720.webp" width="720" height="1360" loading="lazy" alt="Eaves lineup with stages, artists and set times"></div></div>
+      <div class="step" data-i="1"><h3>See who’s going</h3><p>Check how many people are going or interested and which friends are among them, so you never walk in alone. Tap Going or Interested, or invite friends.</p>
+        <div class="device"><img src="/assets/phone-details-720.webp" width="720" height="1360" loading="lazy" alt="Eaves event details with date, price, age limit and friends attending"></div></div>
+      <div class="step" data-i="2"><h3>Follow what you love</h3><p>Follow artists, venues and hosts and see their new events in your feed, next to what your friends are doing.</p>
+        <div class="device"><img src="/assets/phone-following-720.webp" width="720" height="1360" loading="lazy" alt="Eaves feed with events from friends and from artists, venues and hosts you follow"></div></div>
     </div>
-
-    <div class="feature reveal">
-      <div class="feature-media">
-        <img src="/assets/feature-find-your-night.png" alt="Eaves home screen showing tonight's events and personalized recommendations" width="600" height="600" loading="lazy">
-      </div>
-      <div class="feature-text">
-        <h2>Explore</h2>
-        <p>Find events, venues, and artists near you.</p>
-      </div>
+    <div class="sticky" aria-hidden="true">
+      <div class="device on"><img src="/assets/phone-lineup-720.webp" width="720" height="1360" alt="" loading="lazy"></div>
+      <div class="device"><img src="/assets/phone-details-720.webp" width="720" height="1360" alt="" loading="lazy"></div>
+      <div class="device"><img src="/assets/phone-following-720.webp" width="720" height="1360" alt="" loading="lazy"></div>
     </div>
-
-    <div class="feature reveal">
-      <div class="feature-media">
-        <img src="/assets/feature-lineup.png" alt="Eaves lineup screen with stages, artists and set times" width="600" height="600" loading="lazy">
-      </div>
-      <div class="feature-text">
-        <h2>Check the line-up</h2>
-        <p>See who's performing and preview the music before you go.</p>
-      </div>
-    </div>
-
-    <div class="feature reveal">
-      <div class="feature-media">
-        <img src="/assets/feature-whos-going.png" alt="Eaves home screen showing which friends are attending an event" width="600" height="600" loading="lazy">
-      </div>
-      <div class="feature-text">
-        <h2>Check the crowd</h2>
-        <p>See which of your friends are going before you commit.</p>
-      </div>
-    </div>
-
-    <div class="group-head">
-      <span class="eyebrow">Plan &amp; invite</span>
-    </div>
-
-    <div class="feature reveal">
-      <div class="feature-media">
-        <img src="/assets/feature-event-details.png" alt="Eaves event detail screen with attendance status and invite option" width="600" height="600" loading="lazy">
-      </div>
-      <div class="feature-text">
-        <h2>Sync up</h2>
-        <p>See your friends' nightlife plans in one central feed.</p>
-      </div>
-    </div>
-
-    <div class="mini-grid reveal">
-      <div class="mini-card">
-        <h3>Host your own</h3>
-        <p>Create private events (like pre-drinks or house parties) and invite your inner circle.</p>
-      </div>
-      <div class="mini-card">
-        <h3>Stay connected</h3>
-        <p>Follow your favorite artists, venues, and organizers.</p>
-      </div>
-    </div>
-
-  </main>
-
-  <div class="eq-divider" aria-hidden="true">
-    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
   </div>
-
-  <section class="scene reveal">
-    <span class="eyebrow">Built for the whole scene</span>
-    <h2>Eaves isn't just for partygoers — it's for the creators too.</h2>
-    <div class="scene-banner">
-      <img src="/assets/scene-banner.png" alt="Eaves is built for artists, hosts, and venues, as well as partygoers" loading="lazy">
-    </div>
-    <div class="scene-grid">
-      <div class="scene-card">
-        <h3>Hosts</h3>
-        <p>Create events, build lineups, invite artists, bring people together.</p>
-      </div>
-      <div class="scene-card">
-        <h3>Artists</h3>
-        <p>Build your profile, share your sound, join lineups, get discovered.</p>
-      </div>
-      <div class="scene-card">
-        <h3>Venues</h3>
-        <p>Showcase your space, host events, connect with artists and hosts.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta-section reveal">
-    <h2>Your night starts here.</h2>
-    <div class="cta-row">
-      <a class="cta-btn" href="https://eaves.be/app">Download Eaves</a>
-    </div>
-  </section>
-
-  <div class="privacy-note">
-    <p><strong>Your privacy, your control.</strong> Location access is completely optional, and you decide who sees your profile, your friends list, and the events you attend.</p>
+  <div class="extras">
+    <div class="card"><h3>Host your own</h3><p>Create private events like pre-drinks and house parties and invite your inner circle.</p></div>
+    <div class="card"><h3>You decide what you share</h3><p>Location is optional. You choose who sees your profile, friends and the events you go to.</p></div>
   </div>
+</div></section>
 
-  <footer>
-    <p class="acronym-line"><strong>E</strong>xplore · <strong>A</strong>rtists · <strong>V</strong>enues · <strong>E</strong>vents · <strong>S</strong>cenes</p>
-    <div class="store-badges">
-      <a href="https://play.google.com/store/apps/details?id=com.eaves.app">
-        <img src="/assets/store-badge-google.svg" alt="Get it on Google Play">
-      </a>
-      <a href="https://apps.apple.com/app/id6794866218">
-        <img src="/assets/store-badge-apple.svg" alt="Download on the App Store">
-      </a>
-    </div>
-    <div class="footer-links">
-      <a href="/privacy.html">Privacy Policy</a>
-      <a href="/terms.html">Terms of Service</a>
-      <a href="/events/">Upcoming events</a>
-      <a href="/delete-account.html">Delete Account</a>
-      <a href="https://instagram.com/eaves.app">Instagram</a>
-    </div>
-    <span class="contact">help@eaves.be</span>
-  </footer>
+<section class="creators" id="creators"><div class="wrap">
+  <div>
+    <h2>Built for the people behind the night</h2>
+    <div class="role"><h3>Hosts</h3><p>Create events, build the lineup, invite artists and see who’s coming.</p></div>
+    <div class="role"><h3>Artists</h3><p>Build a profile, share your sound and join lineups.</p></div>
+    <div class="role"><h3>Venues</h3><p>Show your space, list your events and connect with hosts and artists.</p></div>
+    <p class="muted" style="margin-top:20px">Choose your role in the app. Venue owners are verified before approval.</p>
+  </div>
+  <div class="device"><img src="/assets/phone-roles-720.webp" width="720" height="1360" loading="lazy" alt="Eaves role selection with Explorer, Artist, Host and Venue Owner"></div>
+</div></section>
 
-  <script>
-    // Fade + slide in each .reveal element once it enters the viewport.
-    // Elements already in view on load reveal immediately (no observer delay).
-    var revealEls = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window) {
-      var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-      revealEls.forEach(function (el) { observer.observe(el); });
-    } else {
-      // No IntersectionObserver support — just show everything.
-      revealEls.forEach(function (el) { el.classList.add('visible'); });
-    }
-  </script>
+<section class="faq" id="faq"><div class="wrap">
+  <h2>Questions</h2>
+  <details><summary>Is Eaves available on iPhone and Android?</summary><p>Yes. Download Eaves from the App Store or Google Play.</p></details>
+  <details><summary>Which cities does Eaves cover?</summary><p>Eaves is live in Leuven. More cities may follow.</p></details>
+  <details><summary>How do I add my event, venue or artist profile?</summary><p>Create an account in the app and request the Host, Artist or Venue Owner role. Venue owners are verified before approval.</p></details>
+  <details><summary>Do I have to share my location?</summary><p>No. Location access is optional and only used to show events and venues near you.</p></details>
+  <details><summary>Can I delete my account?</summary><p>Yes, in the app under Account, Privacy settings, Delete account, or by emailing help@eaves.be. See the <a href="/delete-account.html">delete account page</a>.</p></details>
+</div></section>
 
+<section class="final">
+  <h2>Your night starts here.</h2>
+  <p>Techno, house, drum &amp; bass, student parties and concerts: download Eaves and see what’s on in Leuven tonight.</p>
+  <div class="row badges">
+    <a href="https://apps.apple.com/app/id6794866218"><img src="/assets/store-badge-apple.svg" alt="Download on the App Store" height="46"></a>
+    <a href="https://play.google.com/store/apps/details?id=com.eaves.app"><img src="/assets/store-badge-google.svg" alt="Get it on Google Play" height="46"></a>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="wrap">
+  <nav aria-label="Footer"><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms of service</a><a href="/events/">Upcoming events</a><a href="/delete-account.html">Delete account</a><a href="https://instagram.com/eaves.app">Instagram</a></nav>
+  <a href="mailto:help@eaves.be">help@eaves.be</a>
+</div></footer>
+<script src="/assets/site.js" defer></script>
 </body>
 </html>

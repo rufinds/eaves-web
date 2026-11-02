@@ -3,6 +3,7 @@
 // Output (inside OUT_DIR):
 //   event/<uuid>/index.html   one page per upcoming public event
 //   events/index.html         overview grouped by night
+//   index.html                the marker <!--EVENTS--> is replaced by an events strip
 //   sitemap.xml, robots.txt
 //
 // The script only uses the public anon key and one database function,
@@ -31,6 +32,12 @@ const APP_STORE_ID = '6794866218';
 const APP_STORE_URL = `https://apps.apple.com/app/id${APP_STORE_ID}`;
 const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.eaves.app';
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/assets/scene-banner.png`;
+
+// Placeholder in index.html that is replaced by the events strip at build time.
+const HOME_MARKER = '<!--EVENTS-->';
+// The strip is hidden below this number of upcoming events.
+const HOME_STRIP_MIN = 3;
+const HOME_STRIP_MAX = 5;
 
 // Only covers hosted by us are used as visible cover and og:image. Covers
 // hotlinked from third-party sites are ignored.
@@ -205,6 +212,11 @@ function normalizeEvent(raw) {
         .join(', ')
     : '';
 
+  // Structured address parts for schema.org PostalAddress.
+  const addressParts = location
+    ? { street: location.address_line_1 ?? null, postalCode: location.postal_code ?? null, city: location.city ?? null }
+    : null;
+
   const hasCoords = typeof location?.latitude === 'number' && typeof location?.longitude === 'number';
   const mapsUrl = hasCoords
     ? `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`
@@ -237,6 +249,7 @@ function normalizeEvent(raw) {
     nightKey: nightKey(start),
     placeName,
     address,
+    addressParts,
     mapsUrl,
     latitude: hasCoords ? location.latitude : null,
     longitude: hasCoords ? location.longitude : null,
@@ -255,14 +268,21 @@ function normalizeEvent(raw) {
 const FONTS =
   '<link rel="preconnect" href="https://fonts.googleapis.com">' +
   '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-  '<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">';
+  '<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">';
+
+function storeBadges() {
+  return `<div class="row badges">
+  <a href="${APP_STORE_URL}"><img src="/assets/store-badge-apple.svg" alt="Download on the App Store" height="46"></a>
+  <a href="${PLAY_URL}"><img src="/assets/store-badge-google.svg" alt="Get it on Google Play" height="46"></a>
+</div>`;
+}
 
 function layout({ title, description, canonical, image, extraHead = '', body, script = '' }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="theme-color" content="#121212">
@@ -277,26 +297,20 @@ function layout({ title, description, canonical, image, extraHead = '', body, sc
 <link rel="icon" type="image/png" href="/assets/icon.png">
 <link rel="apple-touch-icon" href="/assets/icon.png">
 ${FONTS}
-<link rel="stylesheet" href="/assets/event.css">
+<link rel="stylesheet" href="/assets/site.css">
 ${extraHead}
 </head>
 <body>
-<header class="topbar">
-  <a class="brand" href="/"><img src="/assets/icon.png" alt="" width="32" height="32">Eaves</a>
-  <a class="all" href="/events/">All events</a>
-</header>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><img src="/assets/icon.png" alt="" width="34" height="34">Eaves</a>
+  <nav class="nav" aria-label="Main"><a href="/events/">Events</a></nav>
+  <a class="btn sm" href="/app?from=events">Download</a>
+</div></header>
 ${body}
-<footer class="foot">
-  <div class="store-badges">
-    <a href="${PLAY_URL}"><img src="/assets/store-badge-google.svg" alt="Get it on Google Play"></a>
-    <a href="${APP_STORE_URL}"><img src="/assets/store-badge-apple.svg" alt="Download on the App Store"></a>
-  </div>
-  <nav class="foot-links">
-    <a href="/privacy.html">Privacy Policy</a>
-    <a href="/terms.html">Terms of Service</a>
-    <a href="https://instagram.com/eaves.app">Instagram</a>
-  </nav>
-</footer>
+<footer class="foot"><div class="wrap">
+  <nav aria-label="Footer"><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms of service</a><a href="/events/">Upcoming events</a><a href="/delete-account.html">Delete account</a><a href="https://instagram.com/eaves.app">Instagram</a></nav>
+  <a href="mailto:help@eaves.be">help@eaves.be</a>
+</div></footer>
 ${script}
 </body>
 </html>
@@ -332,17 +346,28 @@ function renderEventPage(ev) {
       : null,
     priceLabel ? ['Price', esc(priceLabel)] : null,
     ev.minAge ? ['Age', `${ev.minAge}+`] : null,
-    ev.organizer ? ['Organizer', esc(ev.organizer)] : null,
+    ev.organizer ? ['Host', esc(ev.organizer)] : null,
   ].filter(Boolean);
 
   const lineupHtml = ev.lineup.length
-    ? `<section class="block"><h2>Line-up</h2><ul class="lineup">${ev.lineup
+    ? `<section class="block"><h2>Lineup</h2><ul class="lineup">${ev.lineup
         .map(
           (l) =>
             `<li><span>${esc(l.name)}</span>${l.start ? `<time>${esc(timeFormat.format(l.start))}</time>` : ''}</li>`,
         )
         .join('')}</ul></section>`
     : '';
+
+  const p = ev.addressParts;
+  const postalAddress = p
+    ? {
+        '@type': 'PostalAddress',
+        ...(p.street ? { streetAddress: p.street } : {}),
+        ...(p.postalCode ? { postalCode: p.postalCode } : {}),
+        ...(p.city ? { addressLocality: p.city } : {}),
+        addressCountry: 'BE',
+      }
+    : null;
 
   const structured = {
     '@context': 'https://schema.org',
@@ -355,12 +380,12 @@ function renderEventPage(ev) {
     url: canonical,
     image: [ev.cover ?? DEFAULT_OG_IMAGE],
     ...(ev.description ? { description: truncate(ev.description, 500) } : {}),
-    ...(ev.placeName || ev.address
+    ...(ev.placeName || postalAddress
       ? {
           location: {
             '@type': 'Place',
             ...(ev.placeName ? { name: ev.placeName } : {}),
-            address: ev.address || undefined,
+            ...(postalAddress ? { address: postalAddress } : {}),
             ...(ev.latitude !== null
               ? { geo: { '@type': 'GeoCoordinates', latitude: ev.latitude, longitude: ev.longitude } }
               : {}),
@@ -376,29 +401,31 @@ function renderEventPage(ev) {
             price: ev.price.toFixed(2),
             priceCurrency: 'EUR',
             url: ev.ticketUrl ?? canonical,
-            availability: 'https://schema.org/InStock',
+            // Only claim availability when there is a ticket link to back it up.
+            ...(ev.ticketUrl ? { availability: 'https://schema.org/InStock' } : {}),
           },
         }
       : {}),
   };
 
-  const body = `<main class="page">
+  const body = `<main class="evp">
 ${ev.cover ? `<img class="cover" src="${esc(ev.cover)}" alt="" width="1280" height="720">` : ''}
 <h1>${esc(ev.title)}</h1>
-<div class="cta-row">
+<div class="row">
   <a class="btn" id="openApp" href="${esc(`eaves://event/${ev.id}`)}" data-event-id="${ev.id}">Open in Eaves</a>
   ${ev.ticketUrl ? `<a class="btn secondary" href="${esc(ev.ticketUrl)}" rel="noopener nofollow">Tickets</a>` : ''}
 </div>
-<p class="install-hint" id="installHint" hidden>Eaves isn’t installed yet. Install the app below, then tap “Open in Eaves” again.</p>
+<p class="hint" id="installHint" hidden>Eaves isn’t installed yet. Install the app below, then tap “Open in Eaves” again.</p>
 <dl class="facts">
 ${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('\n')}
 </dl>
 ${ev.genres.length ? `<ul class="tags">${ev.genres.map((g) => `<li>${esc(g)}</li>`).join('')}</ul>` : ''}
 ${lineupHtml}
 ${ev.description ? `<section class="block"><h2>About</h2><div class="about">${paragraphs(ev.description)}</div></section>` : ''}
-<section class="block pitch">
+<section class="block">
   <h2>See who’s going</h2>
-  <p>Eaves shows which friends are going, the full line-up and everything else happening in Leuven tonight.</p>
+  <p class="muted">In the app you see which friends are going, can tap Going or Interested and invite your own friends.</p>
+  ${storeBadges()}
 </section>
 </main>`;
 
@@ -415,6 +442,14 @@ ${ev.description ? `<section class="block"><h2>About</h2><div class="about">${pa
   });
 }
 
+function eventRow(ev, { withDay }) {
+  const price = formatPrice(ev.price);
+  const when = withDay
+    ? `${esc(dayShortFormat.format(ev.start))}<br>${esc(timeFormat.format(ev.start))}`
+    : esc(timeFormat.format(ev.start));
+  return `<li><a href="/event/${ev.id}/"><span class="et">${when}</span><span class="en">${esc(ev.title)}${ev.placeName ? `<span class="em">${esc(ev.placeName)}</span>` : ''}</span><span class="ep">${price ? esc(price) : ''}</span></a></li>`;
+}
+
 function renderListingPage(events) {
   const groups = new Map();
   for (const ev of events) {
@@ -424,39 +459,49 @@ function renderListingPage(events) {
 
   const days = [...groups.entries()]
     .map(([key, list]) => {
-      const cards = list
-        .map((ev) => {
-          const price = formatPrice(ev.price);
-          return `<li><a class="card" href="/event/${ev.id}/">
-  <span class="card-time">${esc(timeFormat.format(ev.start))}</span>
-  <span class="card-main"><span class="card-title">${esc(ev.title)}</span>${ev.placeName ? `<span class="card-meta">${esc(ev.placeName)}</span>` : ''}</span>
-  ${price ? `<span class="card-price">${esc(price)}</span>` : ''}
-</a></li>`;
-        })
-        .join('\n');
-      return `<section class="day"><h2>${esc(formatNightLabel(key))}</h2><ul class="cards">${cards}</ul></section>`;
+      const rows = list.map((ev) => eventRow(ev, { withDay: false })).join('\n');
+      return `<section class="day"><h2>${esc(formatNightLabel(key))}</h2><ul class="elist">${rows}</ul></section>`;
     })
     .join('\n');
 
-  const body = `<main class="page">
+  const body = `<main class="evp">
 <h1>Upcoming events in Leuven</h1>
-<p class="lead">Club nights, concerts and more. Open Eaves to see which friends are going.</p>
-${days || '<p class="lead">No upcoming events yet. Check back soon.</p>'}
+<p class="lead muted">Club nights, student parties and concerts. Open Eaves to see which friends are going.</p>
+${days || '<p class="lead muted">No upcoming events yet. Check back soon.</p>'}
+<section class="block">
+  <h2>Get the app</h2>
+  <p class="muted">Follow artists, venues and hosts, and see who’s going.</p>
+  ${storeBadges()}
+</section>
 </main>`;
 
   return layout({
     title: 'Upcoming events in Leuven | Eaves',
-    description: 'Club nights, concerts and nightlife in Leuven. See what is on and which friends are going with the Eaves app.',
+    description: 'Club nights, student parties and concerts in Leuven. See what is on and which friends are going with the Eaves app.',
     canonical: `${SITE_ORIGIN}/events/`,
     image: DEFAULT_OG_IMAGE,
     body,
   });
 }
 
+// Compact strip for the homepage. Empty when there are too few events,
+// because a nearly empty calendar looks dead.
+function renderEventsStrip(events) {
+  const next = events.slice(0, HOME_STRIP_MAX);
+  if (next.length < HOME_STRIP_MIN) return '';
+  return `<section class="events" id="events"><div class="wrap">
+  <h2>On in Leuven</h2>
+  <ul class="elist">${next.map((ev) => eventRow(ev, { withDay: true })).join('\n')}</ul>
+  <p class="note"><a class="link" href="/events/">All upcoming events</a>. Open the app to see which friends are going.</p>
+</div></section>`;
+}
+
 function renderSitemap(events) {
   const urls = [
     { loc: `${SITE_ORIGIN}/` },
     { loc: `${SITE_ORIGIN}/events/` },
+    { loc: `${SITE_ORIGIN}/privacy.html` },
+    { loc: `${SITE_ORIGIN}/terms.html` },
     ...events.map((ev) => ({
       loc: `${SITE_ORIGIN}/event/${ev.id}/`,
       lastmod: ev.updatedAt ? ev.updatedAt.toISOString().slice(0, 10) : undefined,
@@ -475,6 +520,21 @@ async function writePage(relativePath, content) {
   const file = path.join(OUT_DIR, relativePath);
   await mkdir(path.dirname(file), { recursive: true });
   await writeFile(file, content, 'utf8');
+}
+
+// Replaces the marker in the copy of index.html inside OUT_DIR. Never point
+// OUT_DIR at the source folder, or the marker is lost for good.
+async function injectHomeStrip(events) {
+  const file = path.join(OUT_DIR, 'index.html');
+  let html;
+  try {
+    html = await readFile(file, 'utf8');
+  } catch {
+    console.warn('build-events: no index.html in OUT_DIR, skipping events strip');
+    return;
+  }
+  if (!html.includes(HOME_MARKER)) fail(`index.html has no ${HOME_MARKER} marker`);
+  await writeFile(file, html.replace(HOME_MARKER, () => renderEventsStrip(events)), 'utf8');
 }
 
 async function main() {
@@ -496,8 +556,9 @@ async function main() {
 
   for (const ev of events) await writePage(`event/${ev.id}/index.html`, renderEventPage(ev));
   await writePage('events/index.html', renderListingPage(events));
+  await injectHomeStrip(events);
   await writePage('sitemap.xml', renderSitemap(events));
-  await writePage('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
+  await writePage('robots.txt', `User-agent: *\nAllow: /\nDisallow: /auth/\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
 
   console.log(`build-events: wrote ${events.length} event pages to ${OUT_DIR}`);
 }

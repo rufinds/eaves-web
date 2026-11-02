@@ -12,13 +12,13 @@
 <link rel="apple-touch-icon" href="/assets/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:         #121212;
-    --red-bright: #B8291F;
-    --text:       #F2F0ED;
-    --text-muted: #8A8A8A;
+    --red-bright: #C8281C;
+    --text:       #F7F5F2;
+    --text-muted: #CBC7C1;
   }
 
   * { box-sizing: border-box; }
@@ -30,13 +30,13 @@
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   }
 
   a:focus-visible {
-    outline: 2px solid var(--red-bright);
+    outline: 3px solid #F0463A;
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   .wrap {
@@ -54,7 +54,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 60% 45% at 50% 0%, rgba(139,0,0,0.28), transparent 70%);
+    background: radial-gradient(ellipse 60% 45% at 50% 0%, rgba(200,40,28,0.3), transparent 70%);
     pointer-events: none;
   }
 
@@ -74,11 +74,10 @@
   }
 
   h1 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
     font-weight: 700;
-    font-size: clamp(26px, 7vw, 32px);
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    font-size: clamp(36px, 10vw, 46px);
+    line-height: 1.05;
     margin: 0 0 28px;
     max-width: 340px;
     overflow-wrap: anywhere;
@@ -86,14 +85,14 @@
 
   .note {
     color: var(--text-muted);
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.6;
     margin: -12px 0 28px;
     max-width: 300px;
   }
 
   .note.small {
-    font-size: 13px;
+    font-size: 14px;
     margin: 20px 0 0;
   }
 
@@ -114,7 +113,7 @@
     transition: background 0.15s ease;
   }
 
-  .btn:hover { background: #d13a2f; }
+  .btn:hover { background: #DD3226; }
 </style>
 </head>
 <body>
@@ -164,7 +163,7 @@
           appStore: 'Download on the App Store',
           getApp: 'Download Eaves',
           notInstalled: 'Eaves isn\u2019t installed yet. Install the app, then tap your link again.',
-          inAppNote: 'Already installed? Open this page in your browser (\u22EE or \u22EF menu).',
+          inAppNote: 'Already installed? Open this page in your browser (\u22EF menu).',
           desktop: 'Open this link on your phone.',
           claimed: 'This profile has already been claimed.',
           claimedHelp: 'Questions? Email help@eaves.be.'
