@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#121212; --red:#C8281C; --text:#F7F5F2; --muted:#CBC7C1; --line:#3A3A3E; }
+  :root { --bg:#121212; --red:#C4000A; --text:#F7F5F2; --muted:#CBC7C1; --line:#3A3A3E; }
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
-  a:focus-visible { outline: 3px solid #F0463A; outline-offset: 3px; border-radius: 4px; }
+  a:focus-visible { outline: 3px solid #E8000E; outline-offset: 3px; border-radius: 4px; }
   .wrap { min-height: 100%; display: flex; flex-direction: column; align-items: center;
     justify-content: center; text-align: center; padding: 32px 24px;
-    background: radial-gradient(ellipse 60% 45% at 50% 0%, rgba(200,40,28,.3), transparent 70%); }
+    background: radial-gradient(ellipse 60% 45% at 50% 0%, rgba(200,0,10,.3), transparent 70%); }
   .logo { width: 96px; height: 96px; border-radius: 22px; margin-bottom: 24px; }
   h1 { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; text-transform: uppercase;
     font-size: 44px; line-height: 1; margin: 0 0 12px; }
@@ -31,7 +31,7 @@
   .fallback.visible { display: flex; }
   .btn { display: block; padding: 15px 20px; border-radius: 12px; background: var(--red); color: #fff;
     text-decoration: none; font-weight: 600; font-size: 16px; }
-  .btn:hover { background: #DD3226; }
+  .btn:hover { background: #E40008; }
   .btn.secondary { background: transparent; border: 1px solid var(--line); color: var(--text); }
   .btn.secondary:hover { border-color: var(--muted); }
   @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
