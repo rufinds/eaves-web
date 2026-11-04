@@ -96,7 +96,7 @@ body::before{
 .ep:empty{display:none}
 .events .note{margin-top:20px;color:var(--muted)}
 
-/* Feature walk-through with sticky phone (one demo video, each step plays its own segment) */
+/* Feature walk-through: sticky phone, long screenshots scroll with the page (see site.js) */
 .features{padding:72px 0 24px}
 .stage{display:grid;grid-template-columns:1fr 1fr;gap:48px}
 .step{min-height:78vh;display:flex;flex-direction:column;justify-content:center;opacity:.45;transition:opacity .4s}
@@ -104,7 +104,11 @@ body::before{
 .step p{max-width:30em;color:var(--muted)}
 .step .device{display:none}
 .sticky{position:sticky;top:12vh;align-self:start;display:grid;place-items:center}
-.sticky .device{width:auto;height:min(74vh,660px)}
+.sticky .device{height:min(74vh,660px);width:calc(min(74vh,660px) * .5)}
+.sticky .scr{position:absolute;left:0;right:0;top:22px;bottom:0;overflow:hidden;opacity:0;transition:opacity .4s;border-radius:0 0 34px 34px}
+.sticky .scr.on{opacity:1}
+.sticky .scr img{width:100%;height:auto;object-fit:fill;border-radius:0;will-change:transform}
+.sticky .scr.static img{height:100%;object-fit:cover;object-position:top}
 .extras{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:24px 0 72px}
 .card{background:linear-gradient(180deg,#1F1F22,#19191B);border:1px solid var(--line);border-radius:16px;padding:28px}
 .card p{margin:0;color:var(--muted);font-size:16px}
@@ -129,6 +133,9 @@ a.card h3{margin-bottom:6px}
   transform:rotate(45deg);transition:transform .15s}
 .role-link:hover,.role-link:focus-visible{border-color:var(--red-text);background:#1A1415}
 .role-link:hover::after{transform:translateX(4px) rotate(45deg)}
+/* Phone next to the role links: screenshot swaps on hover/focus (see site.js) */
+.device.roles-stack img{position:absolute;left:0;right:0;top:22px;width:100%;height:calc(100% - 22px);opacity:0;transition:opacity .35s}
+.device.roles-stack img.on{opacity:1}
 
 /* Role pages */
 .rp-steps{list-style:none;margin:24px 0 0;padding:0;counter-reset:s}
@@ -223,6 +230,6 @@ details p{margin:14px 0 0;color:var(--muted)}
   html{scroll-behavior:auto}
   .hero .stage3d{animation:none}
   .stage3d .front{transform:rotateY(-14deg) rotateX(4deg) rotateZ(3deg)}
-  .step,.sticky .device{transition:none}
+  .step,.sticky .scr,.device.roles-stack img{transition:none}
   body::before{transform:none}
 }
