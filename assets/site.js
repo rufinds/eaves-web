@@ -39,7 +39,7 @@
 
     var r = step.getBoundingClientRect();
     var p = Math.min(1, Math.max(0, (vh * 0.55 - r.top) / r.height));
-    setScroll(screens[shown], reduce.matches ? from : from + (to - from) * p);
+    setScroll(screens[shown], from + (to - from) * p);
   }
 
   function request() {
