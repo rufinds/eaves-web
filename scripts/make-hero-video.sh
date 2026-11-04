@@ -17,7 +17,7 @@ FC="[0:v]crop=1080:2084:0:108,scale=720:-2,fps=30,split[a][b];\
 [x]trim=duration=6.5,setpts=PTS-STARTPTS[out]"
 
 ffmpeg -v error -y -i "$IN" -filter_complex "$FC" -map "[out]" -an \
-  -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 26 -preset slow -movflags +faststart "$OUT/eaves-hero.mp4"
+  -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 28 -maxrate 700k -bufsize 1400k -preset slow -movflags +faststart "$OUT/eaves-hero.mp4"
 ffmpeg -v error -y -ss 0.1 -i "$IN" -vf "crop=1080:2084:0:108,scale=720:-2" -frames:v 1 \
   -c:v libwebp -quality 80 "$OUT/eaves-hero-poster.webp"
 

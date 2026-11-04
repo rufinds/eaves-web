@@ -39,6 +39,10 @@ const HOME_MARKER = '<!--EVENTS-->';
 const HOME_STRIP_MIN = 3;
 const HOME_STRIP_MAX = 5;
 
+// Version queries for the shared assets; raise them when site.css or site.js change.
+const CSS_VERSION = '8';
+const JS_VERSION = '9';
+
 // Static pages that are listed in the sitemap next to the event pages.
 const STATIC_PAGES = [
   '/',
@@ -271,6 +275,8 @@ function normalizeEvent(raw) {
     genres: (raw.genres ?? []).filter(Boolean).slice(0, 6),
     organizer: raw.organizer_display_name ? String(raw.organizer_display_name).trim() : null,
     cover: trustedImage(raw.cover_image_url),
+    // Set by get_public_event_feed(); older feed versions simply omit it.
+    isStudent: raw.is_student === true,
   };
 }
 
@@ -308,7 +314,7 @@ function layout({ title, description, canonical, image, extraHead = '', body, sc
 <link rel="icon" type="image/png" href="/assets/icon.png">
 <link rel="apple-touch-icon" href="/assets/icon.png">
 ${FONTS}
-<link rel="stylesheet" href="/assets/site.css?v=5">
+<link rel="stylesheet" href="/assets/site.css?v=${CSS_VERSION}">
 ${extraHead}
 </head>
 <body>
@@ -458,10 +464,16 @@ function eventRow(ev, { withDay }) {
   const when = withDay
     ? `${esc(dayShortFormat.format(ev.start))}<br>${esc(timeFormat.format(ev.start))}`
     : esc(timeFormat.format(ev.start));
-  return `<li><a href="/event/${ev.id}/"><span class="et">${when}</span><span class="en">${esc(ev.title)}${ev.placeName ? `<span class="em">${esc(ev.placeName)}</span>` : ''}</span><span class="ep">${price ? esc(price) : ''}</span></a></li>`;
+  return `<li${ev.isStudent ? ' data-student="1"' : ''}><a href="/event/${ev.id}/"><span class="et">${when}</span><span class="en">${esc(ev.title)}${ev.placeName ? `<span class="em">${esc(ev.placeName)}</span>` : ''}</span><span class="ep">${price ? esc(price) : ''}</span></a></li>`;
 }
 
+// The overview. When the list holds both student and other events, a switch
+// above it lets visitors hide the student events (see site.js). Without
+// JavaScript the switch stays hidden and every event is listed.
 function renderListingPage(events) {
+  const studentCount = events.filter((ev) => ev.isStudent).length;
+  const showSwitch = studentCount > 0 && studentCount < events.length;
+
   const groups = new Map();
   for (const ev of events) {
     if (!groups.has(ev.nightKey)) groups.set(ev.nightKey, []);
@@ -475,10 +487,18 @@ function renderListingPage(events) {
     })
     .join('\n');
 
+  const count = `${events.length} upcoming ${events.length === 1 ? 'event' : 'events'}`;
+  const toggle = showSwitch
+    ? `<label class="switch" id="studentSwitch" hidden><input type="checkbox" role="switch" checked><span class="track" aria-hidden="true"><span class="thumb"></span></span><span>Student events</span></label>`
+    : '';
+
   const body = `<main class="evp">
 <h1>Upcoming events in Leuven</h1>
 <p class="lead muted">Club nights, student parties and concerts. Open Eaves to see which friends are going.</p>
+<div class="toolbar"><p class="count" id="eventCount">${count}</p>${toggle}</div>
+<div id="eventList">
 ${days || '<p class="lead muted">No upcoming events yet. Check back soon.</p>'}
+</div>
 <section class="block">
   <h2>Get the app</h2>
   <p class="muted">Follow artists, venues and hosts, and see who’s going.</p>
@@ -492,6 +512,7 @@ ${days || '<p class="lead muted">No upcoming events yet. Check back soon.</p>'}
     canonical: `${SITE_ORIGIN}/events/`,
     image: DEFAULT_OG_IMAGE,
     body,
+    script: `<script src="/assets/site.js?v=${JS_VERSION}" defer></script>`,
   });
 }
 

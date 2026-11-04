@@ -133,3 +133,37 @@
     }, { threshold: 0.25 }).observe(v);
   }
 })();
+
+// Events overview: switch student events on or off. The choice is remembered.
+(function () {
+  var sw = document.getElementById('studentSwitch');
+  var list = document.getElementById('eventList');
+  var count = document.getElementById('eventCount');
+  if (!sw || !list || !count) return;
+  var input = sw.querySelector('input');
+  var KEY = 'eaves.studentEvents';
+
+  function apply() {
+    var showStudent = input.checked;
+    var total = 0;
+    list.querySelectorAll('.day').forEach(function (day) {
+      var visible = 0;
+      day.querySelectorAll('li').forEach(function (li) {
+        var hide = !showStudent && li.getAttribute('data-student') === '1';
+        li.hidden = hide;
+        if (!hide) visible++;
+      });
+      day.hidden = visible === 0;
+      total += visible;
+    });
+    count.textContent = total + ' upcoming ' + (total === 1 ? 'event' : 'events');
+  }
+
+  try { if (localStorage.getItem(KEY) === 'off') input.checked = false; } catch (e) {}
+  sw.hidden = false;
+  input.addEventListener('change', function () {
+    try { localStorage.setItem(KEY, input.checked ? 'on' : 'off'); } catch (e) {}
+    apply();
+  });
+  apply();
+})();

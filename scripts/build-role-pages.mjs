@@ -19,7 +19,6 @@ const LANGS = {
       doTitle: 'What you can do',
       startTitle: 'How to start',
       step1: ['Download Eaves', 'Get the app on iPhone or Android and create your account.'],
-      rolesShotAlt: 'Eaves role selection with Explorer, Artist, Host and Venue Owner',
       faqTitle: 'Questions',
       moreTitle: 'More on Eaves',
       qr: 'On a computer? Scan the code with your phone to get the app.',
@@ -48,7 +47,9 @@ const LANGS = {
         h1: ['Bring your', 'event to life.'],
         lead: 'From small club nights to larger music events, Eaves helps you bring everything together. Create your event, build the lineup, invite artists and connect with venues, all in one place.',
         blurb: 'Create events, build lineups and invite artists.',
-        shot: ['phone-lineup-720.webp', 'Eaves lineup with stages, artists and set times'],
+        // Hero screenshot, and the onboarding screenshot with this role selected.
+        shot: ['phone-details-720.webp', 'Eaves event details with date, price, age limit and friends attending'],
+        rolesShot: ['phone-role-host-720.webp', 'Eaves role selection with the Host role selected'],
         cards: [
           ['Create your event', 'Add everything people need to know: event details, dates, location, price, ticket link, age limit, genres and images. Save a draft and publish when you’re ready.'],
           ['Build your lineup', 'Put together your lineup stage by stage, with artists and set times. Add registered artists or guest artists, send invitations and get notified about their responses. Eaves also flags overlapping slots.'],
@@ -78,7 +79,8 @@ const LANGS = {
         h1: ['Get your name on the', 'lineup.'],
         lead: 'Whether you’re a DJ, musician, producer or part of a band, Eaves gives you a place in Leuven’s music scene. Create your artist profile, share your sound and receive lineup invitations from hosts.',
         blurb: 'Build your profile, share your music and join lineups.',
-        shot: ['phone-following-720.webp', 'Eaves feed with events from artists, venues and hosts you follow'],
+        shot: ['phone-lineup-720.webp', 'Eaves lineup with stages, artists and set times'],
+        rolesShot: ['phone-role-artist-720.webp', 'Eaves role selection with the Artist role selected'],
         cards: [
           ['Open to every artist', 'Just getting started or already playing shows? Every artist is welcome on Eaves. Choose the Artist role and create your profile for free. No following or approval needed.'],
           ['Your music, your profile', 'Show people who you are. Add your artist name, bio, genres, social links and booking contact. Feature tracks from Spotify, SoundCloud or YouTube so people can discover your sound.'],
@@ -106,7 +108,8 @@ const LANGS = {
         h1: ['Put your', 'venue on the map.'],
         lead: 'Give people a place to discover your venue and connect with the local music scene. Showcase your space, keep track of events and decide which hosts can organise events at your venue.',
         blurb: 'Showcase your space and manage host requests.',
-        shot: ['phone-details-720.webp', 'Eaves event details with the venue location'],
+        shot: ['phone-following-720.webp', 'Eaves feed with events from friends and from artists, venues and hosts you follow'],
+        rolesShot: ['phone-role-venue-720.webp', 'Eaves role selection with the Venue Owner role selected'],
         cards: [
           ['Showcase your venue', 'Create a public venue profile with your location, capacity, opening hours, photos and socials. Give visitors a better idea of your space before they arrive.'],
           ['Stay in control of requests', 'Hosts can request your venue for their events. Review each request and approve or decline it in the app. You stay in control of what gets organised at your venue.'],
@@ -187,7 +190,7 @@ ${hreflang}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css?v=5">
+<link rel="stylesheet" href="/assets/site.css?v=8">
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -203,7 +206,7 @@ ${hreflang}
     <h1 class="rp">${esc(r.h1[0])}<br><span class="red">${esc(r.h1[1])}</span></h1>
     <p class="lead">${esc(r.lead)}</p>
     ${badges}
-    <div class="qr"><img src="/assets/qr-app.svg?v=5" alt="${esc(ui.qrAlt)}" width="160" height="160"><span>${esc(ui.qr)}</span></div>
+    <div class="qr"><img src="/assets/qr-app.svg?v=6" alt="${esc(ui.qrAlt)}" width="220" height="220"><span>${esc(ui.qr)}</span></div>
   </div>
   <div class="device"><img src="/assets/${r.shot[0]}" width="720" height="1360" alt="${esc(r.shot[1])}" fetchpriority="high"></div>
 </div></section>
@@ -222,7 +225,7 @@ ${hreflang}
       ${steps}
     </ol>
   </div>
-  <div class="device"><img src="/assets/phone-roles-720.webp" width="720" height="1360" loading="lazy" alt="${esc(ui.rolesShotAlt)}"></div>
+  <div class="device"><img src="/assets/${r.rolesShot[0]}" width="720" height="1387" loading="lazy" alt="${esc(r.rolesShot[1])}"></div>
 </div></section>
 
 <section class="faq"><div class="wrap">
