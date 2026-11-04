@@ -187,7 +187,7 @@ ${hreflang}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/site.css?v=5">
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -203,7 +203,7 @@ ${hreflang}
     <h1 class="rp">${esc(r.h1[0])}<br><span class="red">${esc(r.h1[1])}</span></h1>
     <p class="lead">${esc(r.lead)}</p>
     ${badges}
-    <div class="qr"><img src="/assets/qr-app.svg" alt="${esc(ui.qrAlt)}" width="92" height="92"><span>${esc(ui.qr)}</span></div>
+    <div class="qr"><img src="/assets/qr-app.svg?v=5" alt="${esc(ui.qrAlt)}" width="160" height="160"><span>${esc(ui.qr)}</span></div>
   </div>
   <div class="device"><img src="/assets/${r.shot[0]}" width="720" height="1360" alt="${esc(r.shot[1])}" fetchpriority="high"></div>
 </div></section>

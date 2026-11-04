@@ -308,7 +308,7 @@ function layout({ title, description, canonical, image, extraHead = '', body, sc
 <link rel="icon" type="image/png" href="/assets/icon.png">
 <link rel="apple-touch-icon" href="/assets/icon.png">
 ${FONTS}
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/site.css?v=5">
 ${extraHead}
 </head>
 <body>
