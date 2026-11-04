@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eaves — Discover music events and nightlife in Leuven</title>
-<meta name="description" content="Discover club nights, student parties, concerts and more in Leuven. Check the lineup, see who’s going and find your next night out with Eaves. Free.">
+<title>Eaves — Discover music events in Leuven</title>
+<meta name="description" content="Discover concerts, club nights, student parties, jazz and festivals in Leuven, day or night. Check the lineup, see who’s going and find your next event with Eaves. Free.">
+<meta property="og:title" content="Eaves — What happens in Leuven?">
+<meta property="og:description" content="Discover local music events, see who’s playing and which friends are going.">
 <meta name="theme-color" content="#121212">
 <meta name="apple-itunes-app" content="app-id=6794866218">
 <link rel="canonical" href="https://eaves.be/">
@@ -26,7 +28,7 @@
 <body>
 <header class="top"><div class="wrap">
   <a class="brand" href="/"><img src="/assets/icon.png" alt="" width="34" height="34">Eaves</a>
-  <nav class="nav" aria-label="Main">
+  <span class="tagline">What happens in Leuven?</span>  <nav class="nav" aria-label="Main">
     <a href="#features">Features</a><a href="/events/">Events</a><a href="#creators">For creators</a><a href="#faq">FAQ</a>
   </nav>
   <a class="btn sm" href="/app?from=header">Download</a>
@@ -35,9 +37,8 @@
 <main>
 <section class="hero"><div class="wrap">
   <div>
-    <span class="pill">Leuven nightlife. One place.</span>
     <h1>Know before<br><span class="red">you go.</span></h1>
-    <p class="lead">From underground nights and club parties to live music, jazz and festivals. Discover what’s on in Leuven, see who’s playing and which friends are going.</p>
+    <p class="lead">From club nights and student parties to live music, jazz and festivals, day or night. Discover what happens in Leuven, see who’s playing and which friends are going.</p>
     <div class="row badges">
       <a href="https://apps.apple.com/app/id6794866218"><img src="/assets/store-badge-apple.svg" alt="Download on the App Store" height="46"></a>
       <a href="https://play.google.com/store/apps/details?id=com.eaves.app"><img src="/assets/store-badge-google.svg" alt="Get it on Google Play" height="46"></a>
@@ -45,28 +46,34 @@
     <div class="qr"><img src="/assets/qr-app.svg?v=5" alt="QR code to download Eaves" width="160" height="160"><span>On a computer? Scan the code with your phone to get the app.</span></div>
   </div>
   <div class="stage3d">
-    <div class="device back" aria-hidden="true"><img src="/assets/phone-lineup-720.webp" width="720" height="1360" alt=""></div>
-    <div class="device vid front"><video autoplay muted playsinline preload="auto" poster="/assets/eaves-hero-poster.webp" width="720" height="1390" aria-label="Eaves app: scrolling through tonight’s events and opening an event with its details"><source src="/assets/eaves-hero.mp4" type="video/mp4"></video></div>
+    <div class="device vid front"><video autoplay muted loop playsinline preload="auto" poster="/assets/eaves-hero-poster.webp" width="720" height="1390" aria-label="Eaves app: scrolling through tonight’s events and opening an event with its details"><source src="/assets/eaves-hero.mp4" type="video/mp4"></video></div>
   </div>
 </div></section>
 
 <!--EVENTS-->
 
 <section class="features" id="features"><div class="wrap">
-  <h2>Everything you need for a night out</h2>
+  <h2>Everything you need to go out</h2>
   <div class="stage">
     <div>
-      <div class="step on" data-i="0"><h3>Know the lineup</h3><p>See who’s playing, where and when. Explore artists, check out their music and know what to expect before you arrive.</p>
-        <div class="device"><img src="/assets/phone-lineup-720.webp" width="720" height="1360" loading="lazy" alt="Eaves lineup with stages, artists and set times"></div></div>
-      <div class="step" data-i="1"><h3>See who’s going</h3><p>See who’s going or interested, including your friends. Going solo or meeting up? You decide.</p>
-        <div class="device"><img src="/assets/phone-details-720.webp" width="720" height="1360" loading="lazy" alt="Eaves event details with date, price, age limit and friends attending"></div></div>
-      <div class="step" data-i="2"><h3>Follow what you love</h3><p>Follow your favourite artists, venues and hosts. Their upcoming events will show up in your feed, alongside what your friends are up to.</p>
-        <div class="device"><img src="/assets/phone-following-720.webp" width="720" height="1360" loading="lazy" alt="Eaves feed with events from friends and from artists, venues and hosts you follow"></div></div>
+      <div class="step on" data-start="0" data-end="8">
+        <h3>See who’s going</h3>
+        <p>See who’s going or interested, including your friends. Going solo or meeting up? You decide.</p>
+        <div class="device"><video muted playsinline preload="none" poster="/assets/phone-details-720.webp" src="/assets/feature-demo.mp4" aria-label="Eaves event details with date, price, age limit and friends attending"></video></div>
+      </div>
+      <div class="step" data-start="8" data-end="16">
+        <h3>Know the lineup</h3>
+        <p>See who’s playing, where and when. Explore artists, check out their music and know what to expect before you arrive.</p>
+        <div class="device"><video muted playsinline preload="none" poster="/assets/phone-lineup-720.webp" src="/assets/feature-demo.mp4" aria-label="Eaves lineup with stages, artists and set times"></video></div>
+      </div>
+      <div class="step" data-start="16" data-end="24">
+        <h3>Follow what you love</h3>
+        <p>Follow your favourite artists, venues and hosts. Their upcoming events will show up in your feed, alongside what your friends are up to.</p>
+        <div class="device"><video muted playsinline preload="none" poster="/assets/phone-following-720.webp" src="/assets/feature-demo.mp4" aria-label="Eaves feed with events from friends and from artists, venues and hosts you follow"></video></div>
+      </div>
     </div>
     <div class="sticky" aria-hidden="true">
-      <div class="device on"><img src="/assets/phone-lineup-720.webp" width="720" height="1360" alt="" loading="lazy"></div>
-      <div class="device"><img src="/assets/phone-details-720.webp" width="720" height="1360" alt="" loading="lazy"></div>
-      <div class="device"><img src="/assets/phone-following-720.webp" width="720" height="1360" alt="" loading="lazy"></div>
+      <div class="device"><video muted playsinline preload="none" poster="/assets/phone-details-720.webp" src="/assets/feature-demo.mp4"></video></div>
     </div>
   </div>
   <div class="extras">

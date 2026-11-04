@@ -31,6 +31,8 @@ body::before{
 .nav{display:flex;gap:24px;margin-left:auto;font-size:15px}
 .nav a{text-decoration:none;color:var(--muted)}
 .nav a:hover{color:var(--text)}
+.tagline{margin-left:4px;padding-left:16px;border-left:1px solid var(--line);font:500 14px var(--body);color:var(--muted);white-space:nowrap}
+@media(max-width:1000px){.tagline{display:none}}
 
 /* Buttons and store badges */
 .btn{display:inline-block;padding:15px 28px;border-radius:12px;background:var(--red);color:#fff;font-weight:600;text-decoration:none;white-space:nowrap;transition:background .15s}
@@ -61,7 +63,7 @@ body::before{
 
 /* Hero */
 .hero{padding:56px 0 72px;background:radial-gradient(ellipse 70% 60% at 85% 20%,rgba(200,0,10,.28),transparent 70%)}
-.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.hero .wrap{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
 .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;margin-bottom:24px}
 .pill::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--red-text);box-shadow:0 0 10px var(--red-text)}
 .lead{font-size:clamp(18px,2.2vw,21px);max-width:32em;margin:24px 0 32px;color:var(--muted)}
@@ -71,13 +73,16 @@ body::before{
 .qr img{width:160px;height:160px;border-radius:12px;background:#fff;padding:8px;flex:none}
 .hero h1.rp{font-size:clamp(46px,7.5vw,92px)}
 
-/* Hero phones: a tilted front phone and a dimmer one behind it, with perspective and slow parallax */
-.stage3d{position:relative;display:grid;place-items:center;min-height:640px;perspective:1500px;perspective-origin:30% 40%}
-.stage3d::before{content:'';position:absolute;inset:6% -4% 2% 10%;background:radial-gradient(closest-side,rgba(228,0,8,.34),transparent 72%);filter:blur(10px);z-index:0;pointer-events:none}
+/* Hero phone: one larger phone, tilted at first, slowly straightening while you scroll */
+.stage3d{position:relative;display:grid;place-items:center;min-height:700px;perspective:1600px;perspective-origin:50% 40%}
+.stage3d::before{content:'';position:absolute;inset:6% 0 2% 6%;background:radial-gradient(closest-side,rgba(228,0,8,.34),transparent 72%);filter:blur(10px);z-index:0;pointer-events:none}
 .stage3d .device{grid-area:1/1;margin:0;transform-style:preserve-3d}
-.stage3d .front{z-index:2;transform:translate3d(-26px,calc(var(--sy,0) * -.05px),0) rotateY(-18deg) rotateX(5deg) rotateZ(3deg)}
-.stage3d .back{z-index:1;width:min(270px,70vw);opacity:.6;filter:brightness(.7) saturate(.9);box-shadow:0 0 0 1.5px #3A3A40,0 0 0 3px #0A0A0B,0 24px 50px rgba(0,0,0,.6);
-  transform:translate3d(150px,calc(-28px + var(--sy,0) * -.02px),-160px) rotateY(-18deg) rotateX(5deg) rotateZ(3deg)}
+.stage3d .front{
+  z-index:2;width:min(350px,78vw);cursor:pointer;
+  transform:translate3d(0,calc(var(--sy,0) * -.04px),0)
+    rotateY(calc(-18deg + min(14deg, var(--sy,0) * .03deg)))
+    rotateX(5deg)
+    rotateZ(calc(3deg - min(3deg, var(--sy,0) * .006deg)))}
 
 /* Event rows: homepage strip, listing page */
 .events{padding:64px 0 24px}
@@ -91,7 +96,7 @@ body::before{
 .ep:empty{display:none}
 .events .note{margin-top:20px;color:var(--muted)}
 
-/* Feature walk-through with sticky phone */
+/* Feature walk-through with sticky phone (one demo video, each step plays its own segment) */
 .features{padding:72px 0 24px}
 .stage{display:grid;grid-template-columns:1fr 1fr;gap:48px}
 .step{min-height:78vh;display:flex;flex-direction:column;justify-content:center;opacity:.45;transition:opacity .4s}
@@ -99,8 +104,7 @@ body::before{
 .step p{max-width:30em;color:var(--muted)}
 .step .device{display:none}
 .sticky{position:sticky;top:12vh;align-self:start;display:grid;place-items:center}
-.sticky .device{grid-area:1/1;width:auto;height:min(74vh,660px);opacity:0;transform:scale(.97);transition:opacity .5s,transform .5s}
-.sticky .device.on{opacity:1;transform:none}
+.sticky .device{width:auto;height:min(74vh,660px)}
 .extras{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:24px 0 72px}
 .card{background:linear-gradient(180deg,#1F1F22,#19191B);border:1px solid var(--line);border-radius:16px;padding:28px}
 .card p{margin:0;color:var(--muted);font-size:16px}
@@ -202,9 +206,8 @@ details p{margin:14px 0 0;color:var(--muted)}
   .top .wrap{justify-content:space-between}
   .hero{padding:32px 0 48px}
   .hero .wrap,.creators .wrap{grid-template-columns:1fr}
-  .stage3d{min-height:560px;perspective:1100px}
-  .stage3d .front{transform:translate3d(-14px,0,0) rotateY(-12deg) rotateX(4deg) rotateZ(2deg)}
-  .stage3d .back{transform:translate3d(74px,-20px,-120px) rotateY(-12deg) rotateX(4deg) rotateZ(2deg)}
+  .stage3d{min-height:600px;perspective:1100px}
+  .stage3d .front{width:min(300px,76vw);transform:rotateY(-12deg) rotateX(4deg) rotateZ(2deg)}
   .stage{display:block}.sticky{display:none}
   .step{min-height:0;opacity:1;padding:40px 0}
   .step .device{display:block;margin-top:28px;width:min(260px,70vw)}
@@ -219,7 +222,7 @@ details p{margin:14px 0 0;color:var(--muted)}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .hero .stage3d{animation:none}
-  .stage3d .front,.stage3d .back{transform:rotateY(-14deg) rotateX(4deg) rotateZ(3deg)}
+  .stage3d .front{transform:rotateY(-14deg) rotateX(4deg) rotateZ(3deg)}
   .step,.sticky .device{transition:none}
   body::before{transform:none}
 }
