@@ -208,6 +208,18 @@ details p{margin:14px 0 0;color:var(--muted)}
 .legal th{background:var(--surface);color:var(--text)}
 .legal code{background:var(--surface);padding:1px 5px;border-radius:3px}
 
+/* Events overview toolbar and student switch */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:28px 0 0}
+.count{margin:0;color:var(--muted);font-size:15px}
+.switch{position:relative;display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 10px;border:1px solid var(--line);border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;user-select:none;transition:border-color .15s}
+.switch:hover{border-color:var(--muted)}
+.switch input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.switch .track{position:relative;flex:none;width:38px;height:22px;border-radius:999px;background:#2E2E33;transition:background .15s}
+.switch .thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch input:checked + .track{background:var(--red)}
+.switch input:checked + .track .thumb{transform:translateX(16px)}
+.switch input:focus-visible + .track{outline:3px solid var(--red-text);outline-offset:3px}
+
 @media(max-width:860px){
   .nav,.qr{display:none}
   .top .wrap{justify-content:space-between}
@@ -234,14 +246,30 @@ details p{margin:14px 0 0;color:var(--muted)}
   body::before{transform:none}
 }
 
-/* Events overview toolbar and student switch */
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:28px 0 0}
-.count{margin:0;color:var(--muted);font-size:15px}
-.switch{position:relative;display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 10px;border:1px solid var(--line);border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;user-select:none;transition:border-color .15s}
-.switch:hover{border-color:var(--muted)}
-.switch input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
-.switch .track{position:relative;flex:none;width:38px;height:22px;border-radius:999px;background:#2E2E33;transition:background .15s}
-.switch .thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
-.switch input:checked + .track{background:var(--red)}
-.switch input:checked + .track .thumb{transform:translateX(16px)}
-.switch input:focus-visible + .track{outline:3px solid var(--red-text);outline-offset:3px}
+/* Hero phone: sized to fit the first screen, straight at rest, tilts a little while you scroll away */
+@media(min-width:861px){
+  .hero{padding:32px 0 56px}
+  .hero .wrap{align-items:start}
+  .stage3d{min-height:0}
+  .stage3d .front{
+    width:auto;
+    height:min(calc(100vh - 150px),700px);
+    height:min(calc(100svh - 150px),700px);
+    transform:translate3d(0,calc(var(--sy,0) * -.04px),0)
+      rotateY(calc(-1 * min(12deg, var(--sy,0) * .03deg)))
+      rotateX(min(4deg, calc(var(--sy,0) * .01deg)))}
+}
+@media(max-width:860px){
+  .stage3d{min-height:0}
+  .stage3d .front{width:min(280px,72vw);transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .stage3d .front{transform:none}
+}
+
+/* Play button, only shown when the browser blocks autoplay */
+.vplay{position:absolute;inset:0;z-index:4;width:100%;border:0;padding:0;background:rgba(0,0,0,.35);cursor:pointer}
+.vplay::before{content:'';position:absolute;top:50%;left:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:var(--red)}
+.vplay::after{content:'';position:absolute;top:50%;left:50%;margin:-14px 0 0 -8px;border-style:solid;border-width:14px 0 14px 23px;border-color:transparent transparent transparent #fff}
+.vplay:hover::before{background:var(--red-hover)}
+.vplay:focus-visible{outline:3px solid var(--red-text);outline-offset:-3px}

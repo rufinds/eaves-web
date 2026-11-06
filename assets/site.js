@@ -7,7 +7,6 @@
   if (!steps.length || !screens.length) return;
 
   var desktop = window.matchMedia('(min-width: 861px)');
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   var active = 0;
   var ticking = false;
 
@@ -56,7 +55,7 @@
 
 // Creators: swap the phone screenshot when a role is hovered or focused.
 // Touch devices have no hover, so there the screenshots cycle on their own.
-// Image order must match the order of the role links (Host, Artist, Venue).
+// Image order must match the order of the role links (Artist, Host, Venue).
 (function () {
   var links = document.querySelectorAll('.creators .role-link');
   var shots = document.querySelectorAll('.roles-stack img');
@@ -101,37 +100,63 @@
   }, { passive: true });
 })();
 
-// Hero video: autoplay, loop, pause when off-screen, click to restart.
+// Hero video: starts by itself when visible and pauses when off-screen. When the
+// browser blocks autoplay (data saver, low power mode, reduced motion) a play
+// button is shown and a tap starts the video.
 (function () {
   var v = document.querySelector('.hero .device video');
   if (!v) return;
 
-  v.addEventListener('click', function () {
-    v.currentTime = 0;
-    v.play();
-  });
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'vplay';
+  btn.setAttribute('aria-label', 'Play video');
+  btn.hidden = true;
+  v.parentElement.appendChild(btn);
 
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    v.pause();
-    v.removeAttribute('autoplay');
-    v.controls = true; // make it obvious that this is a video
-    return;
-  }
-
-  v.muted = true;
+  var visible = false;
 
   function play() {
     var p = v.play();
-    if (p && p.catch) p.catch(function () { v.controls = true; }); // e.g. iOS Low Power Mode
+    if (p && p.catch) {
+      p.catch(function () { if (v.paused) btn.hidden = false; });
+    }
   }
 
-  play();
+  function restart() {
+    v.currentTime = 0;
+    play();
+  }
+
+  v.muted = true;
+  v.defaultMuted = true;
+  v.addEventListener('playing', function () { btn.hidden = true; });
+  v.addEventListener('click', restart);
+  btn.addEventListener('click', restart);
+
+  // People who prefer reduced motion get the poster and a play button.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    v.pause();
+    btn.hidden = false;
+    return;
+  }
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) play(); else v.pause();
+      visible = entries[0].isIntersecting;
+      if (visible) play(); else v.pause();
     }, { threshold: 0.25 }).observe(v);
+  } else {
+    visible = true;
+    play();
   }
+
+  // Some browsers only allow playback after a user gesture: retry on the first one.
+  ['pointerup', 'keydown'].forEach(function (type) {
+    window.addEventListener(type, function () {
+      if (visible && v.paused && !btn.hidden) play();
+    }, { once: true });
+  });
 })();
 
 // Events overview: switch student events on or off. The choice is remembered.

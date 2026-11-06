@@ -37,6 +37,10 @@
   @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 </style>
 <noscript><style>.fallback{display:flex}.spinner,.status{display:none}</style></noscript>
+<!-- analytics -->
+<script defer data-domain="eaves.be" src="https://plausible.io/js/script.js"></script>
+<script defer src="/assets/analytics.js?v=1"></script>
+<!-- /analytics -->
 </head>
 <body>
   <div class="wrap">
@@ -66,15 +70,32 @@
     document.getElementById('androidLink').href = PLAY_URL;
     document.getElementById('iosLink').href = APP_STORE_URL;
 
-    if (isIOS) {
-      window.location.replace(APP_STORE_URL);
-    } else if (isAndroid) {
-      window.location.replace(PLAY_URL);
-    } else {
-      // Desktop or unrecognized device: show both options instead of guessing.
-      document.getElementById('spinner').style.display = 'none';
-      document.getElementById('fallback').classList.add('visible');
+    // Count the redirect and where the visitor came from, then continue shortly
+    // after so the analytics request can leave first.
+    function go(url, os) {
+      var from = new URLSearchParams(window.location.search).get('from') || 'direct';
+      try {
+        if (typeof window.plausible === 'function') {
+          window.plausible('App redirect ' + os, { props: { from: from } });
+        } else if (window.umami && typeof window.umami.track === 'function') {
+          window.umami.track('App redirect ' + os, { from: from });
+        }
+      } catch (e) { /* never block the redirect */ }
+      setTimeout(function () { window.location.replace(url); }, 300);
     }
+
+    // Wait for the page (and the analytics script) to load before redirecting.
+    window.addEventListener('load', function () {
+      if (isIOS) {
+        go(APP_STORE_URL, 'ios');
+      } else if (isAndroid) {
+        go(PLAY_URL, 'android');
+      } else {
+        // Desktop or unrecognized device: show both options instead of guessing.
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('fallback').classList.add('visible');
+      }
+    });
 
     // Safety net: reveal the fallback buttons after 2.5s if the redirect is blocked or slow.
     setTimeout(function () {

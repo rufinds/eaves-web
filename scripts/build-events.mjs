@@ -40,8 +40,8 @@ const HOME_STRIP_MIN = 3;
 const HOME_STRIP_MAX = 5;
 
 // Version queries for the shared assets; raise them when site.css or site.js change.
-const CSS_VERSION = '8';
-const JS_VERSION = '9';
+const CSS_VERSION = '9';
+const JS_VERSION = '10';
 
 // Static pages that are listed in the sitemap next to the event pages.
 const STATIC_PAGES = [
@@ -316,6 +316,10 @@ function layout({ title, description, canonical, image, extraHead = '', body, sc
 ${FONTS}
 <link rel="stylesheet" href="/assets/site.css?v=${CSS_VERSION}">
 ${extraHead}
+<!-- analytics -->
+<script defer data-domain="eaves.be" src="https://plausible.io/js/script.js"></script>
+<script defer src="/assets/analytics.js?v=1"></script>
+<!-- /analytics -->
 </head>
 <body>
 <header class="top"><div class="wrap">

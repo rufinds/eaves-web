@@ -20,8 +20,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css?v=8">
+<link rel="stylesheet" href="/assets/site.css?v=9">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"Eaves","applicationCategory":"LifestyleApplication","operatingSystem":"iOS, Android","url":"https://eaves.be/","image":"https://eaves.be/assets/icon.png","description":"Discover music events and nightlife in Leuven with Eaves.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+<!-- analytics -->
+<script defer data-domain="eaves.be" src="https://plausible.io/js/script.js"></script>
+<script defer src="/assets/analytics.js?v=1"></script>
+<!-- /analytics -->
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -55,23 +59,22 @@
   <h2>Everything you need to go out</h2>
   <div class="stage">
     <div>
-      <div class="step on" data-i="0" data-screen="0" data-from="0" data-to="0.22"><h3>See who’s going</h3><p>See who’s going or interested, including your friends. Going solo or meeting up? You decide.</p>
-        <div class="device"><img src="/assets/phone-details-720.webp" width="720" height="1360" loading="lazy" alt="Eaves event details with date, price, age limit and friends attending"></div></div>
-      <div class="step" data-i="1" data-screen="0" data-from="0.22" data-to="0.6"><h3>Follow what you love</h3><p>Follow your favourite artists, venues and hosts. Their upcoming events will show up in your feed, alongside what your friends are up to.</p>
-        <div class="device"><img src="/assets/phone-following-720.webp" width="720" height="1360" loading="lazy" alt="Eaves feed with events from friends and from artists, venues and hosts you follow"></div></div>
-      <div class="step" data-i="2" data-screen="1" data-from="0" data-to="0"><h3>Know the lineup</h3><p>See who’s playing, where and when. Explore artists, check out their music and know what to expect before you arrive.</p>
-        <div class="device"><img src="/assets/phone-lineup-720.webp" width="720" height="1360" loading="lazy" alt="Eaves lineup with stages, artists and set times"></div></div>
+      <div class="step on" data-screen="0" data-from="0" data-to="0.3"><h3>All the details</h3><p>Date, time, location, price and age limit on one screen, so you know exactly what to expect.</p>
+        <div class="device"><img src="/assets/scroll-details.webp" style="object-position:50% 0%" width="720" height="5115" loading="lazy" alt="Eaves event page with date, time, location, price and age limit"></div></div>
+      <div class="step" data-screen="0" data-from="0.3" data-to="0.65"><h3>See who’s going</h3><p>See how many people are going or interested, and which of your friends are among them. Going solo or meeting up? You decide.</p>
+        <div class="device"><img src="/assets/scroll-details.webp" style="object-position:50% 40%" width="720" height="5115" loading="lazy" alt="Eaves event page showing who is going and which friends are attending"></div></div>
+      <div class="step" data-screen="0" data-from="0.65" data-to="1"><h3>Say you’re in</h3><p>Tap Going or Interested, or invite your friends in one tap. Your plans stay private unless you share them.</p>
+        <div class="device"><img src="/assets/scroll-details.webp" style="object-position:50% 80%" width="720" height="5115" loading="lazy" alt="Eaves event page with Going, Interested and Invite friends buttons"></div></div>
     </div>
     <div class="sticky" aria-hidden="true">
       <div class="device">
         <div class="scr on"><img src="/assets/scroll-details.webp" width="720" height="5115" loading="lazy" alt=""></div>
-        <div class="scr static"><img src="/assets/phone-lineup-720.webp" width="720" height="1360" alt="" loading="lazy"></div>
       </div>
     </div>
   </div>
   <div class="extras">
+    <div class="card"><h3>Know the lineup</h3><p>See every stage, artist and set time before you go, and check out their music.</p></div>
     <div class="card"><h3>Never miss a night</h3><p>Save your favourite searches and get notified when something new pops up. We’ll also remind you about events you’re going to.</p></div>
-    <div class="card"><h3>Find your kind of night</h3><p>Looking for something specific? Filter by genre, date, price or event type. Save your searches for later.</p></div>
     <div class="card"><h3>Your own little party</h3><p>From pre-drinks to house parties, create private events and invite your friends.</p></div>
     <div class="card"><h3>Your privacy, your choice</h3><p>Choose what you share and who gets to see it. Your profile, friends list and event activity are yours to control.</p></div>
   </div>
@@ -117,6 +120,6 @@
   <nav aria-label="Footer"><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms of service</a><a href="/events/">Upcoming events</a><a href="/for-hosts/">For hosts</a><a href="/for-artists/">For artists</a><a href="/for-venues/">For venues</a><a href="/delete-account.html">Delete account</a><a href="https://instagram.com/eaves.app">Instagram</a></nav>
   <a href="mailto:help@eaves.be">help@eaves.be</a>
 </div></footer>
-<script src="/assets/site.js?v=9" defer></script>
+<script src="/assets/site.js?v=10" defer></script>
 </body>
 </html>
