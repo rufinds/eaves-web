@@ -6,6 +6,9 @@ on:
   schedule:
     # Hourly refresh so new and expired events show up without a manual deploy.
     - cron: '7 * * * *'
+  # Fired by the database when a public event is created or changes.
+  repository_dispatch:
+    types: [events-changed]
   workflow_dispatch:
 
 permissions:
@@ -20,19 +23,25 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+
+      # sharp, satori and the card fonts are only needed at build time.
+      - name: Install dependencies
+        run: npm ci
 
       - name: Assemble static files
         run: |
           mkdir _site
-          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' --exclude='_site_test' --exclude='scripts' --exclude='screens' --exclude='node_modules' ./ _site/
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' --exclude='_site_test' --exclude='scripts' --exclude='screens' --exclude='node_modules' --exclude='package.json' --exclude='package-lock.json' --exclude='.gitignore' ./ _site/
 
-      - name: Generate event pages
+      - name: Generate event pages and images
         env:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           OUT_DIR: _site
@@ -43,6 +52,17 @@ jobs:
           if grep -q '<!--EVENTS-->' _site/index.html; then
             echo "Events marker still present in index.html" >&2
             exit 1
+          fi
+
+      # A single failed image only costs that event its preview, so this only
+      # warns; build-events.mjs already fails when every image fails.
+      - name: Verify event images
+        run: |
+          pages=$(find _site/event -name index.html 2>/dev/null | wc -l)
+          images=$(find _site/event -name og.jpg 2>/dev/null | wc -l)
+          echo "event pages: $pages, preview images: $images"
+          if [ "$pages" -gt 0 ] && [ "$images" -lt "$pages" ]; then
+            echo "::warning::$((pages - images)) event page(s) have no generated preview image"
           fi
 
       # Universal links break silently when these files are missing.

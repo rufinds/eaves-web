@@ -2,3 +2,8 @@ node_modules/
 screens/
 package-lock.json
 _site_test/
+node_modules/
+_site/
+_site_test/
+.cache/
+.DS_Store

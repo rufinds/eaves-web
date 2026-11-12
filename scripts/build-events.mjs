@@ -2,6 +2,8 @@
 //
 // Output (inside OUT_DIR):
 //   event/<uuid>/index.html   one page per upcoming public event
+//   event/<uuid>/og.jpg       1200x630 link preview image
+//   event/<uuid>/story.jpg    1080x1920 card the app shares as an image
 //   events/index.html         overview grouped by night
 //   index.html                the marker <!--EVENTS--> is replaced by an events strip
 //   sitemap.xml, robots.txt
@@ -11,9 +13,22 @@
 // The anon role has no access to the underlying tables. A fetch error aborts
 // the build, so the previous deployment stays online instead of being replaced
 // by an empty site.
+//
+// Images: see scripts/lib/event-images.mjs. A failure for a single event only
+// drops that event back to the fallback preview; the build fails only when
+// image generation fails for every event (broken fonts, missing logo, ...).
+// Set SKIP_EVENT_IMAGES=1 for quick local runs without images.
 
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+  OG_HEIGHT,
+  OG_WIDTH,
+  buildCard,
+  createEventImageRenderer,
+  fetchCover,
+} from './lib/event-images.mjs';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
 
@@ -22,6 +37,13 @@ const SUPABASE_URL = process.env.SUPABASE_URL ?? 'https://pxrgheclywxmpbnclngh.s
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 const OUT_DIR = path.resolve(process.env.OUT_DIR ?? '_site');
 const EVENTS_FIXTURE = process.env.EVENTS_FIXTURE; // local testing only
+const SKIP_EVENT_IMAGES = process.env.SKIP_EVENT_IMAGES === '1';
+
+// Repository root (this file lives in <root>/scripts).
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+// Events rendered in parallel. Each one downloads a cover and draws two cards.
+const IMAGE_CONCURRENCY = 4;
 
 const TIME_ZONE = 'Europe/Brussels';
 // Same "night day" rule as the app: a night belongs to the day it started on
@@ -101,6 +123,19 @@ function httpsUrl(value) {
 function trustedImage(value) {
   const url = httpsUrl(value);
   return url && TRUSTED_IMAGE_HOSTS.has(new URL(url).host) ? url : null;
+}
+
+// Runs `worker` over `items` with at most `limit` running at the same time.
+async function mapPool(items, limit, worker) {
+  let next = 0;
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) {
+      const item = items[next];
+      next += 1;
+      await worker(item);
+    }
+  });
+  await Promise.all(runners);
 }
 
 // ── Time handling (Europe/Brussels) ───────────────────────────────────────────
@@ -280,6 +315,50 @@ function normalizeEvent(raw) {
   };
 }
 
+// ── Images ────────────────────────────────────────────────────────────────────
+
+/**
+ * Writes og.jpg and story.jpg for every event and returns a map of event id to
+ * what was generated. Events missing from the map keep the fallback preview.
+ */
+async function generateEventImages(events) {
+  const results = new Map();
+
+  if (SKIP_EVENT_IMAGES) {
+    console.log('build-events: SKIP_EVENT_IMAGES=1, event pages use the fallback preview image');
+    return results;
+  }
+  if (events.length === 0) return results;
+
+  const renderer = await createEventImageRenderer({ repoRoot: REPO_ROOT });
+  let failures = 0;
+
+  await mapPool(events, IMAGE_CONCURRENCY, async (ev) => {
+    try {
+      const cover = ev.cover ? await fetchCover(ev.cover) : null;
+      if (ev.cover && !cover) {
+        console.warn(`build-events: cover of ${ev.id} could not be loaded, using the branded card`);
+      }
+
+      const card = buildCard(ev);
+      const [og, story] = await Promise.all([
+        renderer.renderOg(card, cover),
+        renderer.renderStory(card, cover),
+      ]);
+
+      await writePage(`event/${ev.id}/og.jpg`, og);
+      await writePage(`event/${ev.id}/story.jpg`, story);
+      results.set(ev.id, { og: true, story: true });
+    } catch (error) {
+      failures += 1;
+      console.warn(`build-events: images failed for ${ev.id}: ${error instanceof Error ? error.message : error}`);
+    }
+  });
+
+  if (failures === events.length) fail('image generation failed for every event');
+  return results;
+}
+
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
 const FONTS =
@@ -294,7 +373,17 @@ function storeBadges() {
 </div>`;
 }
 
-function layout({ title, description, canonical, image, extraHead = '', body, script = '' }) {
+// `imageMeta` ({ width, height, alt }) is only passed when the preview image is
+// one we generated and therefore know the exact size of.
+function layout({ title, description, canonical, image, imageMeta = null, extraHead = '', body, script = '' }) {
+  const imageDetails = imageMeta
+    ? `<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="${imageMeta.width}">
+<meta property="og:image:height" content="${imageMeta.height}">
+<meta property="og:image:alt" content="${esc(imageMeta.alt)}">
+`
+    : '';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -305,19 +394,21 @@ function layout({ title, description, canonical, image, extraHead = '', body, sc
 <meta name="theme-color" content="#121212">
 <link rel="canonical" href="${esc(canonical)}">
 <meta property="og:site_name" content="Eaves">
+<meta property="og:locale" content="en_GB">
 <meta property="og:type" content="website">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}">
 <meta property="og:image" content="${esc(image)}">
-<meta name="twitter:card" content="summary_large_image">
+${imageDetails}<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${esc(image)}">
 <link rel="icon" type="image/png" href="/assets/icon.png">
 <link rel="apple-touch-icon" href="/assets/icon.png">
 ${FONTS}
 <link rel="stylesheet" href="/assets/site.css?v=${CSS_VERSION}">
 ${extraHead}
 <!-- analytics -->
-<script defer data-domain="eaves.be" src="https://plausible.io/js/script.js"></script>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="b7c5ed40-a290-4b9a-bbb1-bb2cb1de248c"></script>
 <script defer src="/assets/analytics.js?v=1"></script>
 <!-- /analytics -->
 </head>
@@ -347,7 +438,8 @@ function paragraphs(text) {
     .join('\n');
 }
 
-function renderEventPage(ev) {
+// `images` is the entry of generateEventImages() for this event, if any.
+function renderEventPage(ev, images) {
   const canonical = `${SITE_ORIGIN}/event/${ev.id}/`;
   const priceLabel = formatPrice(ev.price);
   const metaDescription = truncate(
@@ -355,6 +447,18 @@ function renderEventPage(ev) {
       `${ev.title} on ${formatNightLabel(ev.nightKey)}${ev.placeName ? ` at ${ev.placeName}` : ''}. See who is going on Eaves.`,
     155,
   );
+
+  const hasGeneratedPreview = images?.og === true;
+  const previewImage = hasGeneratedPreview
+    ? `${canonical}og.jpg`
+    : (ev.cover ?? DEFAULT_OG_IMAGE);
+  const previewMeta = hasGeneratedPreview
+    ? {
+        width: OG_WIDTH,
+        height: OG_HEIGHT,
+        alt: `${ev.title}, ${formatNightLabel(ev.nightKey)}${ev.placeName ? ` at ${ev.placeName}` : ''}`,
+      }
+    : null;
 
   const facts = [
     ['When', `${esc(formatNightLabel(ev.nightKey))}<br>${esc(formatTimeRange(ev.start, ev.end))}`],
@@ -399,7 +503,7 @@ function renderEventPage(ev) {
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     url: canonical,
-    image: [ev.cover ?? DEFAULT_OG_IMAGE],
+    image: [previewImage],
     ...(ev.description ? { description: truncate(ev.description, 500) } : {}),
     ...(ev.placeName || postalAddress
       ? {
@@ -454,7 +558,8 @@ ${ev.description ? `<section class="block"><h2>About</h2><div class="about">${pa
     title: `${ev.title} in Leuven | Eaves`,
     description: metaDescription,
     canonical,
-    image: ev.cover ?? DEFAULT_OG_IMAGE,
+    image: previewImage,
+    imageMeta: previewMeta,
     extraHead:
       `<meta name="apple-itunes-app" content="app-id=${APP_STORE_ID}, app-argument=eaves://event/${ev.id}">\n` +
       `<script type="application/ld+json">${jsonLd(structured)}</script>`,
@@ -549,10 +654,11 @@ ${urls.map((u) => `  <url><loc>${esc(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.la
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
+// Writes text or binary content below OUT_DIR, creating folders as needed.
 async function writePage(relativePath, content) {
   const file = path.join(OUT_DIR, relativePath);
   await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, content, 'utf8');
+  await writeFile(file, content, typeof content === 'string' ? 'utf8' : undefined);
 }
 
 // Replaces the marker in the copy of index.html inside OUT_DIR. Never point
@@ -587,13 +693,15 @@ async function main() {
   await rm(path.join(OUT_DIR, 'event'), { recursive: true, force: true });
   await rm(path.join(OUT_DIR, 'events'), { recursive: true, force: true });
 
-  for (const ev of events) await writePage(`event/${ev.id}/index.html`, renderEventPage(ev));
+  const images = await generateEventImages(events);
+
+  for (const ev of events) await writePage(`event/${ev.id}/index.html`, renderEventPage(ev, images.get(ev.id)));
   await writePage('events/index.html', renderListingPage(events));
   await injectHomeStrip(events);
   await writePage('sitemap.xml', renderSitemap(events));
   await writePage('robots.txt', `User-agent: *\nAllow: /\nDisallow: /auth/\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
 
-  console.log(`build-events: wrote ${events.length} event pages to ${OUT_DIR}`);
+  console.log(`build-events: wrote ${events.length} event pages and ${images.size} image sets to ${OUT_DIR}`);
 }
 
 main().catch((error) => fail(error instanceof Error ? error.stack : String(error)));
