@@ -29,6 +29,7 @@ import {
   createEventImageRenderer,
   fetchCover,
 } from './lib/event-images.mjs';
+import { eventTypeLabel, genreLabel } from './lib/labels.mjs';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
 
@@ -297,6 +298,9 @@ function normalizeEvent(raw) {
     end,
     updatedAt: raw.updated_at ? new Date(raw.updated_at) : null,
     nightKey: nightKey(start),
+    // Night the event ends in; differs from nightKey for multi-night events.
+    endNightKey: end ? nightKey(end) : null,
+    eventType: raw.event_type ?? null,
     placeName,
     address,
     addressParts,
@@ -408,7 +412,7 @@ ${FONTS}
 <link rel="stylesheet" href="/assets/site.css?v=${CSS_VERSION}">
 ${extraHead}
 <!-- analytics -->
-<script defer src="https://cloud.umami.is/script.js" data-website-id="b7c5ed40-a290-4b9a-bbb1-bb2cb1de248c"></script>
+<script defer data-domain="eaves.be" src="https://plausible.io/js/script.js"></script>
 <script defer src="/assets/analytics.js?v=1"></script>
 <!-- /analytics -->
 </head>
@@ -472,6 +476,12 @@ function renderEventPage(ev, images) {
     priceLabel ? ['Price', esc(priceLabel)] : null,
     ev.minAge ? ['Age', `${ev.minAge}+`] : null,
     ev.organizer ? ['Host', esc(ev.organizer)] : null,
+  ].filter(Boolean);
+
+  // Event type first, then the genres, as readable labels (never raw enum values).
+  const tagLabels = [
+    eventTypeLabel(ev.eventType, 'en'),
+    ...ev.genres.map((genre) => genreLabel(genre, 'en')),
   ].filter(Boolean);
 
   const lineupHtml = ev.lineup.length
@@ -544,7 +554,7 @@ ${ev.cover ? `<img class="cover" src="${esc(ev.cover)}" alt="" width="1280" heig
 <dl class="facts">
 ${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('\n')}
 </dl>
-${ev.genres.length ? `<ul class="tags">${ev.genres.map((g) => `<li>${esc(g)}</li>`).join('')}</ul>` : ''}
+${tagLabels.length ? `<ul class="tags">${tagLabels.map((label) => `<li>${esc(label)}</li>`).join('')}</ul>` : ''}
 ${lineupHtml}
 ${ev.description ? `<section class="block"><h2>About</h2><div class="about">${paragraphs(ev.description)}</div></section>` : ''}
 <section class="block">

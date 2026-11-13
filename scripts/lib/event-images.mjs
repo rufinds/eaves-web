@@ -12,6 +12,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import satori from 'satori';
+import { eventTypeLabel, genreLabel } from './labels.mjs';
 
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
@@ -61,6 +62,9 @@ function toSupportedText(value) {
 
 // ── Card data ─────────────────────────────────────────────────────────────────
 
+const CARD_LANG = 'nl';
+const MAX_TAGS = 3;
+
 const dateFormat = new Intl.DateTimeFormat('nl-BE', {
   timeZone: 'UTC',
   weekday: 'long',
@@ -72,6 +76,12 @@ const timeFormat = new Intl.DateTimeFormat('nl-BE', {
   hour: '2-digit',
   minute: '2-digit',
   hourCycle: 'h23',
+});
+const endDayFormat = new Intl.DateTimeFormat('nl-BE', {
+  timeZone: TIME_ZONE,
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
 });
 
 function cleanText(value, max) {
@@ -90,6 +100,18 @@ function formatPrice(price) {
   return `€${price.toFixed(2).replace(/\.00$/, '').replace('.', ',')}`;
 }
 
+// "21:00 – 05:00" within one night; an event that runs into another night
+// names the end day as well ("21:00 – zo 16 aug. 02:00").
+function formatTimeLabel(ev) {
+  const start = timeFormat.format(ev.start);
+  if (!ev.end) return `Vanaf ${start}`;
+  const end = timeFormat.format(ev.end);
+  if (ev.endNightKey && ev.endNightKey !== ev.nightKey) {
+    return `${start} – ${endDayFormat.format(ev.end)} ${end}`;
+  }
+  return `${start} – ${end}`;
+}
+
 /**
  * Plain, pre-formatted data for the cards. `ev` is the normalised event of
  * build-events.mjs; the night day (nightKey) is used for the date so an event
@@ -97,8 +119,20 @@ function formatPrice(price) {
  */
 export function buildCard(ev) {
   const day = dateFormat.format(new Date(`${ev.nightKey}T12:00:00Z`));
-  const start = timeFormat.format(ev.start);
-  const timeLabel = ev.end ? `${start} – ${timeFormat.format(ev.end)}` : `Vanaf ${start}`;
+
+  const tags = [
+    eventTypeLabel(ev.eventType, CARD_LANG),
+    ...(ev.genres ?? []).map((genre) => genreLabel(genre, CARD_LANG)),
+  ]
+    .filter(Boolean)
+    .map((tag) => cleanText(tag, 22))
+    .filter((tag, index, all) => tag && all.indexOf(tag) === index)
+    .slice(0, MAX_TAGS);
+
+  const facts = [formatPrice(ev.price), ev.minAge ? `${ev.minAge}+` : null]
+    .filter(Boolean)
+    .join('  ·  ');
+
   const lineup = ev.lineup
     .map((l) => cleanText(l.name, 28))
     .filter(Boolean)
@@ -107,10 +141,10 @@ export function buildCard(ev) {
   return {
     title: cleanText(ev.title, 90) || 'Event',
     dateLabel: day.charAt(0).toUpperCase() + day.slice(1),
-    timeLabel,
+    timeLabel: formatTimeLabel(ev),
     place: cleanText(ev.placeName, 42),
-    price: formatPrice(ev.price),
-    minAge: ev.minAge ? `${ev.minAge}+` : null,
+    tags,
+    facts,
     lineup,
   };
 }
@@ -152,16 +186,15 @@ function storyTitleSize(length, hasCover) {
   return Math.round(base * scale);
 }
 
-function pill(label, style = {}) {
+function tagPill(label) {
   return h(
     {
-      padding: '10px 24px',
+      padding: '8px 22px',
       borderRadius: 999,
       border: `2px solid ${COLOR.line}`,
-      color: COLOR.text,
-      fontSize: 32,
+      color: COLOR.muted,
+      fontSize: 28,
       fontWeight: 600,
-      ...style,
     },
     label,
   );
@@ -172,8 +205,6 @@ const GLOW = `radial-gradient(circle at 50% 0%, rgba(200,0,10,0.38), rgba(18,18,
 // ── Card trees ────────────────────────────────────────────────────────────────
 
 function brandedOgTree(card, logoUri) {
-  const meta = [card.timeLabel, card.place].filter(Boolean).join('   ·   ');
-
   return h(
     {
       width: OG_WIDTH,
@@ -196,11 +227,12 @@ function brandedOgTree(card, logoUri) {
           {
             fontSize: 32,
             fontWeight: 600,
-            letterSpacing: 3,
+            letterSpacing: 2,
             textTransform: 'uppercase',
             color: COLOR.redBright,
+            lineClamp: 1,
           },
-          card.dateLabel,
+          `${card.dateLabel}  ·  ${card.timeLabel}`,
         ),
         h(
           {
@@ -214,7 +246,7 @@ function brandedOgTree(card, logoUri) {
         ),
       ]),
       h({ justifyContent: 'space-between', alignItems: 'center' }, [
-        h({ fontSize: 34, color: COLOR.muted, maxWidth: 820, lineClamp: 1 }, meta),
+        h({ fontSize: 36, color: COLOR.muted, maxWidth: 820, lineClamp: 1 }, card.place || ' '),
         h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 42 }, 'eaves.be'),
       ]),
     ],
@@ -223,18 +255,16 @@ function brandedOgTree(card, logoUri) {
 
 // 9:16 card. Instagram covers roughly the top 250 and bottom 250 px with its
 // own interface, so the content stays inside that safe zone.
+//
+// Order: cover, date and time, title, tags, venue, price and age, lineup.
+// The lineup only appears without a cover: a flyer carries it already, and a
+// card without a flyer has the room.
 function storyTree(card, logoUri, coverUri) {
   const hasCover = Boolean(coverUri);
-  const details = [
-    h({ fontSize: 46, fontWeight: 600 }, card.timeLabel),
-    ...(card.place ? [h({ fontSize: 42, color: COLOR.muted, lineClamp: 1 }, card.place)] : []),
-  ];
-
-  const chips = [card.price, card.minAge].filter(Boolean).map((label) => pill(label));
-
-  // With a cover and a long title the card runs out of vertical room, so the
-  // lineup (the least important line) is dropped first.
-  const showLineup = card.lineup.length > 0 && !(hasCover && card.title.length > 36);
+  // A cover plus a long title leaves no room for the tags, the least
+  // important element.
+  const showTags = card.tags.length > 0 && !(hasCover && card.title.length > 36);
+  const showLineup = card.lineup.length > 0 && !hasCover;
 
   return h(
     {
@@ -248,29 +278,24 @@ function storyTree(card, logoUri, coverUri) {
       color: COLOR.text,
     },
     [
-      h({ alignItems: 'center', gap: 22 }, [
-        img(logoUri, 84, 84, { borderRadius: 20 }),
-        h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 60 }, 'Eaves'),
-      ]),
-
-      hasCover
-        ? img(coverUri, 936, 527, { borderRadius: 28, marginTop: 56 })
-        : h({ flexGrow: 1 }),
+      hasCover ? img(coverUri, 936, 527, { borderRadius: 28 }) : h({ flexGrow: 1 }),
 
       h({ flexDirection: 'column', marginTop: hasCover ? 56 : 0 }, [
-        h(
-          {
-            alignSelf: 'flex-start',
-            padding: '14px 30px',
-            borderRadius: 999,
-            backgroundColor: COLOR.red,
-            fontSize: 36,
-            fontWeight: 600,
-            letterSpacing: 2,
-            textTransform: 'uppercase',
-          },
-          card.dateLabel,
-        ),
+        h({ alignItems: 'center', flexWrap: 'wrap', gap: 20 }, [
+          h(
+            {
+              padding: '14px 30px',
+              borderRadius: 999,
+              backgroundColor: COLOR.red,
+              fontSize: 36,
+              fontWeight: 600,
+              letterSpacing: 2,
+              textTransform: 'uppercase',
+            },
+            card.dateLabel,
+          ),
+          h({ fontSize: 40, fontWeight: 600 }, card.timeLabel),
+        ]),
         h(
           {
             marginTop: 34,
@@ -282,8 +307,15 @@ function storyTree(card, logoUri, coverUri) {
           },
           card.title,
         ),
-        h({ flexDirection: 'column', gap: 10, marginTop: 40 }, details),
-        ...(chips.length ? [h({ gap: 16, marginTop: 34 }, chips)] : []),
+        ...(showTags
+          ? [h({ flexWrap: 'wrap', gap: 12, marginTop: 36 }, card.tags.map((tag) => tagPill(tag)))]
+          : []),
+        ...(card.place
+          ? [h({ marginTop: 40, fontSize: 46, fontWeight: 600, lineClamp: 1 }, card.place)]
+          : []),
+        ...(card.facts
+          ? [h({ marginTop: card.place ? 8 : 40, fontSize: 40, color: COLOR.muted }, card.facts)]
+          : []),
         ...(showLineup
           ? [h({ marginTop: 34, fontSize: 36, color: COLOR.muted, lineClamp: 1 }, card.lineup.join('  ·  '))]
           : []),
@@ -301,7 +333,10 @@ function storyTree(card, logoUri, coverUri) {
           flexShrink: 0,
         },
         [
-          h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 64 }, 'eaves.be'),
+          h({ alignItems: 'center', gap: 18 }, [
+            img(logoUri, 56, 56, { borderRadius: 14 }),
+            h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 60 }, 'eaves.be'),
+          ]),
           h({ fontSize: 30, color: COLOR.muted }, 'Zie wie er gaat in de app'),
         ],
       ),
