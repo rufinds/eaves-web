@@ -1,8 +1,7 @@
 node_modules/
 screens/
-_site_test/
-node_modules/
 _site/
 _site_test/
 .cache/
 .DS_Store
+fixture.json

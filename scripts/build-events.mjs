@@ -298,8 +298,10 @@ function normalizeEvent(raw) {
     end,
     updatedAt: raw.updated_at ? new Date(raw.updated_at) : null,
     nightKey: nightKey(start),
-    // Night the event ends in; differs from nightKey for multi-night events.
-    endNightKey: end ? nightKey(end) : null,
+    // Night the last minute of the event falls in; differs from nightKey for
+    // multi-night events. The end is exclusive, so an event that ends exactly
+    // at the cutoff hour still belongs to the night it started in.
+    endNightKey: end ? nightKey(new Date(Math.max(start.getTime(), end.getTime() - 1))) : null,
     eventType: raw.event_type ?? null,
     placeName,
     address,

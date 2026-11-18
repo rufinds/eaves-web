@@ -63,7 +63,8 @@ function toSupportedText(value) {
 // ── Card data ─────────────────────────────────────────────────────────────────
 
 const CARD_LANG = 'nl';
-const MAX_TAGS = 3;
+const MAX_GENRES = 2;
+const MAX_LINEUP = 4;
 
 const dateFormat = new Intl.DateTimeFormat('nl-BE', {
   timeZone: 'UTC',
@@ -77,8 +78,22 @@ const timeFormat = new Intl.DateTimeFormat('nl-BE', {
   minute: '2-digit',
   hourCycle: 'h23',
 });
-const endDayFormat = new Intl.DateTimeFormat('nl-BE', {
-  timeZone: TIME_ZONE,
+// Night days are plain calendar dates (YYYY-MM-DD), so these use UTC.
+const weekdayLongFormat = new Intl.DateTimeFormat('nl-BE', { timeZone: 'UTC', weekday: 'long' });
+const weekdayShortFormat = new Intl.DateTimeFormat('nl-BE', { timeZone: 'UTC', weekday: 'short' });
+const dayNumberFormat = new Intl.DateTimeFormat('nl-BE', { timeZone: 'UTC', day: 'numeric' });
+const monthShortFormat = new Intl.DateTimeFormat('nl-BE', { timeZone: 'UTC', month: 'short' });
+const rangeDayFormat = new Intl.DateTimeFormat('nl-BE', {
+  timeZone: 'UTC',
+  weekday: 'short',
+  day: 'numeric',
+});
+const rangeMonthFormat = new Intl.DateTimeFormat('nl-BE', {
+  timeZone: 'UTC',
+  month: 'long',
+});
+const rangeDayMonthFormat = new Intl.DateTimeFormat('nl-BE', {
+  timeZone: 'UTC',
   weekday: 'short',
   day: 'numeric',
   month: 'short',
@@ -100,51 +115,93 @@ function formatPrice(price) {
   return `€${price.toFixed(2).replace(/\.00$/, '').replace('.', ',')}`;
 }
 
-// "21:00 – 05:00" within one night; an event that runs into another night
-// names the end day as well ("21:00 – zo 16 aug. 02:00").
-function formatTimeLabel(ev) {
-  const start = timeFormat.format(ev.start);
-  if (!ev.end) return `Vanaf ${start}`;
-  const end = timeFormat.format(ev.end);
-  if (ev.endNightKey && ev.endNightKey !== ev.nightKey) {
-    return `${start} – ${endDayFormat.format(ev.end)} ${end}`;
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/**
+ * Date and time of the event as shown on the cards.
+ *
+ * One night: the full date and the hours ("21:00 – 05:00").
+ * Several nights (a festival, a weekend): only the range of nights and no
+ * hours, because the hours differ per day and the start time of the first
+ * night says little about the rest.
+ *
+ * `hero` holds the same date split in three lines (weekday, day, month) for
+ * the large date block that replaces the cover of events without one.
+ */
+function formatWhen(ev) {
+  const first = new Date(`${ev.nightKey}T12:00:00Z`);
+  const multiNight = Boolean(ev.end && ev.endNightKey && ev.endNightKey > ev.nightKey);
+
+  if (multiNight) {
+    const last = new Date(`${ev.endNightKey}T12:00:00Z`);
+    const sameMonth = ev.nightKey.slice(0, 7) === ev.endNightKey.slice(0, 7);
+    const range = sameMonth
+      ? `${rangeDayFormat.format(first)} – ${rangeDayFormat.format(last)} ${rangeMonthFormat.format(last)}`
+      : `${rangeDayMonthFormat.format(first)} – ${rangeDayMonthFormat.format(last)}`;
+    return {
+      dateLabel: capitalize(range),
+      timeLabel: null,
+      hero: {
+        top: `${weekdayShortFormat.format(first)} – ${weekdayShortFormat.format(last)}`,
+        big: `${dayNumberFormat.format(first)}–${dayNumberFormat.format(last)}`,
+        bottom: sameMonth
+          ? rangeMonthFormat.format(last)
+          : `${monthShortFormat.format(first)} – ${monthShortFormat.format(last)}`,
+      },
+    };
   }
-  return `${start} – ${end}`;
+
+  const start = timeFormat.format(ev.start);
+  return {
+    dateLabel: capitalize(dateFormat.format(first)),
+    timeLabel: ev.end ? `${start} – ${timeFormat.format(ev.end)}` : `Vanaf ${start}`,
+    hero: {
+      top: weekdayLongFormat.format(first),
+      big: dayNumberFormat.format(first),
+      bottom: rangeMonthFormat.format(first),
+    },
+  };
 }
 
 /**
  * Plain, pre-formatted data for the cards. `ev` is the normalised event of
  * build-events.mjs; the night day (nightKey) is used for the date so an event
  * at 01:00 still belongs to the evening it started on.
+ *
+ * `chips` is the row of small labels on the story: event type, genres, price
+ * and age, in that order. `kind` decides the style (see chip()).
  */
 export function buildCard(ev) {
-  const day = dateFormat.format(new Date(`${ev.nightKey}T12:00:00Z`));
+  const { dateLabel, timeLabel, hero } = formatWhen(ev);
 
-  const tags = [
-    eventTypeLabel(ev.eventType, CARD_LANG),
-    ...(ev.genres ?? []).map((genre) => genreLabel(genre, CARD_LANG)),
-  ]
-    .filter(Boolean)
-    .map((tag) => cleanText(tag, 22))
-    .filter((tag, index, all) => tag && all.indexOf(tag) === index)
-    .slice(0, MAX_TAGS);
+  const typeLabel = cleanText(eventTypeLabel(ev.eventType, CARD_LANG), 22);
+  const genreLabels = (ev.genres ?? [])
+    .map((genre) => cleanText(genreLabel(genre, CARD_LANG), 22))
+    .filter((label, index, all) => label && label !== typeLabel && all.indexOf(label) === index)
+    .slice(0, MAX_GENRES);
 
-  const facts = [formatPrice(ev.price), ev.minAge ? `${ev.minAge}+` : null]
-    .filter(Boolean)
-    .join('  ·  ');
+  const price = formatPrice(ev.price);
+  const chips = [
+    ...(typeLabel ? [{ kind: 'type', label: typeLabel }] : []),
+    ...genreLabels.map((label) => ({ kind: 'genre', label })),
+    ...(price ? [{ kind: 'price', label: price }] : []),
+    ...(ev.minAge ? [{ kind: 'age', label: `${ev.minAge}+` }] : []),
+  ];
 
   const lineup = ev.lineup
-    .map((l) => cleanText(l.name, 28))
+    .map((l) => cleanText(l.name, 30))
     .filter(Boolean)
-    .slice(0, 3);
+    .slice(0, MAX_LINEUP);
 
   return {
     title: cleanText(ev.title, 90) || 'Event',
-    dateLabel: day.charAt(0).toUpperCase() + day.slice(1),
-    timeLabel: formatTimeLabel(ev),
+    dateLabel,
+    timeLabel,
+    hero,
     place: cleanText(ev.placeName, 42),
-    tags,
-    facts,
+    chips,
     lineup,
   };
 }
@@ -173,34 +230,220 @@ function dataUri(buffer, mime) {
   return `data:${mime};base64,${buffer.toString('base64')}`;
 }
 
-function ogTitleSize(length) {
-  if (length <= 18) return 132;
-  if (length <= 32) return 108;
-  if (length <= 52) return 88;
-  return 72;
+// ── Title fitting ─────────────────────────────────────────────────────────────
+
+// Barlow Condensed Bold has no metrics available at build time, so text widths
+// are estimated per character (measured on rendered cards: about 0.35 to 0.40
+// em on average). The wrap factor is used to count lines; the word factor is
+// deliberately higher, because a single word that is too wide cannot wrap and
+// would run past the margin.
+const TITLE_WRAP_FACTOR = 0.39;
+const TITLE_WORD_FACTOR = 0.42;
+const TITLE_SPACE_FACTOR = 0.2;
+const TITLE_MAX_LINES = 3;
+const TITLE_MIN_SIZE = 48;
+const STORY_TITLE_SIZES = [200, 160, 124, 100, 84, 72];
+
+function longestWord(text) {
+  return Math.max(1, ...text.split(' ').map((word) => word.length));
 }
 
-function storyTitleSize(length, hasCover) {
-  const scale = hasCover ? 1 : 1.18;
-  const base = length <= 14 ? 200 : length <= 24 ? 160 : length <= 40 ? 124 : 100;
-  return Math.round(base * scale);
+// Greedy word wrap with estimated widths; returns the number of lines.
+function countTitleLines(text, size, width) {
+  const spaceWidth = size * TITLE_SPACE_FACTOR;
+  let lines = 1;
+  let lineWidth = 0;
+  for (const word of text.split(' ')) {
+    const wordWidth = word.length * size * TITLE_WRAP_FACTOR;
+    if (lineWidth === 0) {
+      lineWidth = wordWidth;
+    } else if (lineWidth + spaceWidth + wordWidth <= width) {
+      lineWidth += spaceWidth + wordWidth;
+    } else {
+      lines += 1;
+      lineWidth = wordWidth;
+    }
+  }
+  return lines;
 }
 
-function tagPill(label) {
+/**
+ * Largest title size from the ladder that keeps the longest word inside the
+ * margins, stays within TITLE_MAX_LINES and within `maxHeight` (lineHeight 1).
+ */
+function fitTitle(text, maxHeight, width) {
+  const wordCap = Math.floor(width / (longestWord(text) * TITLE_WORD_FACTOR));
+  let last = null;
+  for (const base of STORY_TITLE_SIZES) {
+    const size = Math.max(TITLE_MIN_SIZE, Math.min(base, wordCap));
+    const lines = countTitleLines(text, size, width);
+    last = { size, lines: Math.min(lines, TITLE_MAX_LINES) };
+    if (lines <= TITLE_MAX_LINES && lines * size <= maxHeight) return last;
+  }
+  return last;
+}
+
+function ogTitleSize(text) {
+  const length = text.length;
+  const base = length <= 18 ? 132 : length <= 32 ? 108 : length <= 52 ? 88 : 72;
+  const wordCap = Math.floor((OG_WIDTH - 128) / (longestWord(text) * TITLE_WORD_FACTOR));
+  return Math.max(TITLE_MIN_SIZE, Math.min(base, wordCap));
+}
+
+// ── Chips ─────────────────────────────────────────────────────────────────────
+
+const CHIP_FONT_SIZE = 30;
+const CHIP_PADDING_X = 24;
+const CHIP_BORDER = 2;
+const CHIP_HEIGHT = 60;
+const CHIP_GAP = 12;
+// Average glyph width of Inter SemiBold relative to the font size.
+const CHIP_CHAR_WIDTH = 0.58;
+
+// Type: filled red. Genre and age: outlined. Price: light, like a price tag.
+function chip(item) {
+  const base = {
+    padding: `10px ${CHIP_PADDING_X}px`,
+    borderRadius: 999,
+    fontSize: CHIP_FONT_SIZE,
+    fontWeight: 600,
+    border: `${CHIP_BORDER}px solid`,
+  };
+  const styles = {
+    type: { backgroundColor: COLOR.red, borderColor: COLOR.red, color: COLOR.text },
+    genre: { borderColor: COLOR.line, color: COLOR.muted },
+    age: { borderColor: COLOR.line, color: COLOR.muted },
+    price: { backgroundColor: COLOR.text, borderColor: COLOR.text, color: COLOR.bg },
+  };
+  return h({ ...base, ...styles[item.kind] }, item.label);
+}
+
+// Number of rows the chips take when they wrap inside `width`.
+function countChipRows(chips, width) {
+  if (chips.length === 0) return 0;
+  let rows = 1;
+  let rowWidth = 0;
+  for (const item of chips) {
+    const chipWidth =
+      item.label.length * CHIP_FONT_SIZE * CHIP_CHAR_WIDTH + 2 * (CHIP_PADDING_X + CHIP_BORDER);
+    if (rowWidth === 0) {
+      rowWidth = chipWidth;
+    } else if (rowWidth + CHIP_GAP + chipWidth <= width) {
+      rowWidth += CHIP_GAP + chipWidth;
+    } else {
+      rows += 1;
+      rowWidth = chipWidth;
+    }
+  }
+  return rows;
+}
+
+// Large date block shown where the cover would be, for events without a
+// cover of their own (about half of them): the date is the most useful thing
+// to see at a glance, and it keeps both kinds of card laid out the same way.
+function dateHero(hero, height) {
+  const bigSize = hero.big.length > 3 ? 250 : 340;
   return h(
     {
-      padding: '8px 22px',
-      borderRadius: 999,
-      border: `2px solid ${COLOR.line}`,
-      color: COLOR.muted,
-      fontSize: 28,
-      fontWeight: 600,
+      width: 936,
+      height,
+      flexShrink: 0,
+      borderRadius: 28,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      padding: '0 72px',
+      backgroundImage: 'linear-gradient(135deg, #C4000A 0%, #5A0000 100%)',
+      color: COLOR.text,
     },
-    label,
+    [
+      h(
+        { fontSize: 40, fontWeight: 600, letterSpacing: 8, textTransform: 'uppercase', opacity: 0.85 },
+        hero.top,
+      ),
+      h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: bigSize, lineHeight: 0.95 }, hero.big),
+      h({ fontSize: 52, fontWeight: 600, letterSpacing: 10, textTransform: 'uppercase' }, hero.bottom),
+    ],
   );
 }
 
 const GLOW = `radial-gradient(circle at 50% 0%, rgba(200,0,10,0.38), rgba(18,18,18,0) 62%)`;
+
+// ── Story layout planning ─────────────────────────────────────────────────────
+
+// Instagram covers roughly the top 250 and bottom 250 px with its own
+// interface, so the content stays inside this height.
+const STORY_PAD_TOP = 210;
+const STORY_PAD_BOTTOM = 230;
+const STORY_PAD_X = 72;
+const STORY_CONTENT_HEIGHT = STORY_HEIGHT - STORY_PAD_TOP - STORY_PAD_BOTTOM;
+const STORY_CONTENT_WIDTH = STORY_WIDTH - 2 * STORY_PAD_X;
+
+// A cover keeps its 16:9 shape. The date block of events without a cover is
+// flexible: it takes the space the other blocks leave over.
+const COVER_HEIGHT = 527;
+const HERO_MIN = 380;
+const HERO_MAX = 640;
+
+// Block heights (px). Rows that depend on the font are estimated slightly
+// high, so the card never runs into the footer.
+const VISUAL_GAP = 56;
+const WHEN_PILL_HEIGHT = 74;
+const WHEN_TEXT_HEIGHT = 54;
+const WHEN_GAP = 34;
+const PLACE_MARGIN = 40;
+const PLACE_HEIGHT = 64;
+const PLACE_FONT_SIZE = 52;
+const CHIPS_MARGIN = 32;
+const LINEUP_MARGIN = 32;
+const LINEUP_ROW = 54;
+const FOOTER_HEIGHT = 112;
+const FOOTER_GAP = 40;
+
+// Title heights tried in order; a smaller title is only used when the card
+// does not fit otherwise.
+const TITLE_MAX_HEIGHTS = [380, 300, 230];
+
+/**
+ * Decides the size of every flexible part of the story card, so that the
+ * content always fits inside the safe zone and nothing is squeezed by the
+ * layout engine.
+ *
+ * Title, date, venue and chips always stay. Only the lineup is optional: it is
+ * added when at least two names fit. The date block takes whatever space is
+ * left, up to HERO_MAX; a cover keeps its fixed height.
+ */
+function planStory(card, hasCover) {
+  const hasWhenRow = hasCover || Boolean(card.timeLabel);
+  const whenBlock = hasWhenRow ? (hasCover ? WHEN_PILL_HEIGHT : WHEN_TEXT_HEIGHT) + WHEN_GAP : 0;
+  const placeBlock = card.place ? PLACE_MARGIN + PLACE_HEIGHT : 0;
+  const chipRows = countChipRows(card.chips, STORY_CONTENT_WIDTH);
+  const chipsBlock = chipRows > 0 ? CHIPS_MARGIN + chipRows * CHIP_HEIGHT + (chipRows - 1) * CHIP_GAP : 0;
+  const visualMin = hasCover ? COVER_HEIGHT : HERO_MIN;
+
+  let title = null;
+  let room = 0;
+  for (const maxHeight of TITLE_MAX_HEIGHTS) {
+    title = fitTitle(card.title, maxHeight, STORY_CONTENT_WIDTH);
+    const fixed =
+      VISUAL_GAP + whenBlock + title.size * title.lines + placeBlock + chipsBlock + FOOTER_GAP + FOOTER_HEIGHT;
+    room = STORY_CONTENT_HEIGHT - fixed - visualMin;
+    if (room >= 0) break;
+  }
+
+  let lineupCount = 0;
+  if (card.lineup.length > 0) {
+    const wanted = Math.min(card.lineup.length, hasCover ? 3 : MAX_LINEUP);
+    const count = Math.min(wanted, Math.floor((room - LINEUP_MARGIN) / LINEUP_ROW));
+    if (count >= Math.min(2, wanted)) {
+      lineupCount = count;
+      room -= LINEUP_MARGIN + count * LINEUP_ROW;
+    }
+  }
+
+  const visualHeight = hasCover ? COVER_HEIGHT : Math.min(HERO_MAX, HERO_MIN + Math.max(0, room));
+
+  return { titleSize: title.size, lineupCount, visualHeight };
+}
 
 // ── Card trees ────────────────────────────────────────────────────────────────
 
@@ -232,13 +475,13 @@ function brandedOgTree(card, logoUri) {
             color: COLOR.redBright,
             lineClamp: 1,
           },
-          `${card.dateLabel}  ·  ${card.timeLabel}`,
+          card.timeLabel ? `${card.dateLabel}  ·  ${card.timeLabel}` : card.dateLabel,
         ),
         h(
           {
             fontFamily: 'Barlow Condensed',
             fontWeight: 700,
-            fontSize: ogTitleSize(card.title.length),
+            fontSize: ogTitleSize(card.title),
             lineHeight: 1.02,
             lineClamp: 3,
           },
@@ -253,71 +496,88 @@ function brandedOgTree(card, logoUri) {
   );
 }
 
-// 9:16 card. Instagram covers roughly the top 250 and bottom 250 px with its
-// own interface, so the content stays inside that safe zone.
+// Venue on one line with a red bar in front of it, no label.
+function placeRow(place) {
+  return h({ marginTop: PLACE_MARGIN, alignItems: 'center', gap: 24 }, [
+    h({ width: 8, height: 52, borderRadius: 4, backgroundColor: COLOR.red, flexShrink: 0 }),
+    h({ fontSize: PLACE_FONT_SIZE, fontWeight: 600, maxWidth: 840, flexShrink: 1, lineClamp: 1 }, place),
+  ]);
+}
+
+// 9:16 card, laid out inside the Instagram safe zone. Sizes come from
+// planStory().
 //
-// Order: cover, date and time, title, tags, venue, price and age, lineup.
-// The lineup only appears without a cover: a flyer carries it already, and a
-// card without a flyer has the room.
-function storyTree(card, logoUri, coverUri) {
+// Top: the cover, or a large date block when the event has no cover.
+// Then: date and time (cover) or time only (date block), title, venue, a row
+// of chips (type, genres, price, age) and the lineup when there is room.
+// Bottom: logo and a plain call to action.
+//
+// With a cover the root has no background of its own: the renderer draws a
+// blurred, darkened copy of the cover behind the card (see storyBackdrop).
+function storyTree(card, plan, logoUri, coverUri) {
   const hasCover = Boolean(coverUri);
-  // A cover plus a long title leaves no room for the tags, the least
-  // important element.
-  const showTags = card.tags.length > 0 && !(hasCover && card.title.length > 36);
-  const showLineup = card.lineup.length > 0 && !hasCover;
+
+  const whenRow = hasCover
+    ? h({ alignItems: 'center', flexWrap: 'wrap', gap: 20 }, [
+        h(
+          {
+            padding: '14px 30px',
+            borderRadius: 999,
+            backgroundColor: COLOR.red,
+            fontSize: 36,
+            fontWeight: 600,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+          },
+          card.dateLabel,
+        ),
+        ...(card.timeLabel ? [h({ fontSize: 40, fontWeight: 600 }, card.timeLabel)] : []),
+      ])
+    : card.timeLabel
+      ? h({ fontSize: 44, fontWeight: 600 }, card.timeLabel)
+      : null;
 
   return h(
     {
       width: STORY_WIDTH,
       height: STORY_HEIGHT,
       flexDirection: 'column',
-      padding: '210px 72px 230px',
-      backgroundColor: COLOR.bg,
-      backgroundImage: GLOW,
+      padding: `${STORY_PAD_TOP}px ${STORY_PAD_X}px ${STORY_PAD_BOTTOM}px`,
       fontFamily: 'Inter',
       color: COLOR.text,
+      ...(hasCover ? {} : { backgroundColor: COLOR.bg, backgroundImage: GLOW }),
     },
     [
-      hasCover ? img(coverUri, 936, 527, { borderRadius: 28 }) : h({ flexGrow: 1 }),
+      hasCover
+        ? img(coverUri, STORY_CONTENT_WIDTH, plan.visualHeight, { borderRadius: 28, flexShrink: 0 })
+        : dateHero(card.hero, plan.visualHeight),
 
-      h({ flexDirection: 'column', marginTop: hasCover ? 56 : 0 }, [
-        h({ alignItems: 'center', flexWrap: 'wrap', gap: 20 }, [
-          h(
-            {
-              padding: '14px 30px',
-              borderRadius: 999,
-              backgroundColor: COLOR.red,
-              fontSize: 36,
-              fontWeight: 600,
-              letterSpacing: 2,
-              textTransform: 'uppercase',
-            },
-            card.dateLabel,
-          ),
-          h({ fontSize: 40, fontWeight: 600 }, card.timeLabel),
-        ]),
+      h({ flexDirection: 'column', flexShrink: 0, marginTop: VISUAL_GAP }, [
+        ...(whenRow ? [whenRow] : []),
         h(
           {
-            marginTop: 34,
+            marginTop: whenRow ? WHEN_GAP : 0,
             fontFamily: 'Barlow Condensed',
             fontWeight: 700,
-            fontSize: storyTitleSize(card.title.length, hasCover),
+            fontSize: plan.titleSize,
             lineHeight: 1.0,
-            lineClamp: hasCover ? 3 : 5,
+            lineClamp: TITLE_MAX_LINES,
           },
           card.title,
         ),
-        ...(showTags
-          ? [h({ flexWrap: 'wrap', gap: 12, marginTop: 36 }, card.tags.map((tag) => tagPill(tag)))]
+        ...(card.place ? [placeRow(card.place)] : []),
+        ...(card.chips.length > 0
+          ? [h({ flexWrap: 'wrap', gap: CHIP_GAP, marginTop: CHIPS_MARGIN }, card.chips.map((item) => chip(item)))]
           : []),
-        ...(card.place
-          ? [h({ marginTop: 40, fontSize: 46, fontWeight: 600, lineClamp: 1 }, card.place)]
-          : []),
-        ...(card.facts
-          ? [h({ marginTop: card.place ? 8 : 40, fontSize: 40, color: COLOR.muted }, card.facts)]
-          : []),
-        ...(showLineup
-          ? [h({ marginTop: 34, fontSize: 36, color: COLOR.muted, lineClamp: 1 }, card.lineup.join('  ·  '))]
+        ...(plan.lineupCount > 0
+          ? [
+              h(
+                { flexDirection: 'column', gap: 6, marginTop: LINEUP_MARGIN },
+                card.lineup
+                  .slice(0, plan.lineupCount)
+                  .map((name) => h({ fontSize: 40, fontWeight: 600, color: COLOR.muted, lineClamp: 1 }, name)),
+              ),
+            ]
           : []),
       ]),
 
@@ -329,7 +589,7 @@ function storyTree(card, logoUri, coverUri) {
           alignItems: 'center',
           borderTop: `2px solid ${COLOR.line}`,
           paddingTop: 36,
-          marginTop: 48,
+          marginTop: FOOTER_GAP,
           flexShrink: 0,
         },
         [
@@ -337,7 +597,7 @@ function storyTree(card, logoUri, coverUri) {
             img(logoUri, 56, 56, { borderRadius: 14 }),
             h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 60 }, 'eaves.be'),
           ]),
-          h({ fontSize: 30, color: COLOR.muted }, 'Zie wie er gaat in de app'),
+          h({ fontSize: 34, fontWeight: 600 }, 'Bekijk in de app'),
         ],
       ),
     ],
@@ -389,6 +649,29 @@ async function jpegUnderLimit(makePipeline, maxBytes) {
   return last;
 }
 
+// Darkening gradient over the blurred cover: keeps the text readable and
+// the card dark at the top and bottom, where the interface sits.
+const BACKDROP_SHADE = Buffer.from(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${STORY_WIDTH}" height="${STORY_HEIGHT}">` +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0" stop-color="#121212" stop-opacity="0.55"/>' +
+    '<stop offset="0.5" stop-color="#121212" stop-opacity="0.75"/>' +
+    '<stop offset="1" stop-color="#121212" stop-opacity="0.95"/>' +
+    '</linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>',
+);
+
+// Full-canvas background for cards with a cover: the cover scaled up, blurred
+// and darkened, so the card is filled with the colours of the flyer.
+async function storyBackdrop(cover) {
+  const blurred = await sharp(cover)
+    .rotate()
+    .resize(STORY_WIDTH, STORY_HEIGHT, { fit: 'cover' })
+    .blur(40)
+    .modulate({ brightness: 0.8, saturation: 1.1 })
+    .toBuffer();
+  return sharp(blurred).composite([{ input: BACKDROP_SHADE }]).png().toBuffer();
+}
+
 export async function createEventImageRenderer({ repoRoot }) {
   const [fonts, logo] = await Promise.all([
     loadFonts(repoRoot),
@@ -416,12 +699,28 @@ export async function createEventImageRenderer({ repoRoot }) {
 
     /** 1080x1920 story card. */
     async renderStory(card, cover) {
+      const plan = planStory(card, Boolean(cover));
+
       const coverBuffer = cover
-        ? await sharp(cover).rotate().resize(936, 527, { fit: 'cover' }).jpeg({ quality: 86 }).toBuffer()
+        ? await sharp(cover)
+            .rotate()
+            .resize(STORY_CONTENT_WIDTH, plan.visualHeight, { fit: 'cover' })
+            .jpeg({ quality: 86 })
+            .toBuffer()
         : null;
       const coverUri = coverBuffer ? dataUri(coverBuffer, 'image/jpeg') : null;
-      const raster = await draw(storyTree(card, logoUri, coverUri), STORY_WIDTH, STORY_HEIGHT);
-      return raster.jpeg({ quality: 88, mozjpeg: true }).toBuffer();
+      const raster = await draw(storyTree(card, plan, logoUri, coverUri), STORY_WIDTH, STORY_HEIGHT);
+
+      // Cards with a cover are drawn on a transparent canvas and composited
+      // over the blurred backdrop; cards without a cover carry their own
+      // background.
+      if (!cover) return raster.jpeg({ quality: 88, mozjpeg: true }).toBuffer();
+
+      const [backdrop, overlay] = await Promise.all([storyBackdrop(cover), raster.png().toBuffer()]);
+      return sharp(backdrop)
+        .composite([{ input: overlay }])
+        .jpeg({ quality: 88, mozjpeg: true })
+        .toBuffer();
     },
   };
 }
