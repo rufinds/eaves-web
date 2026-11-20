@@ -28,6 +28,16 @@ const COLOR = {
   text: '#F7F5F2',
   muted: '#CBC7C1',
   line: 'rgba(255,255,255,0.16)',
+  // Chips follow the app: dark pill, red outline and text for the event type,
+  // green for genres. The text is a little lighter than in the app, because a
+  // story is read small and often over a blurred cover.
+  typeBorder: '#D10010',
+  typeText: '#F0343C',
+  genreBorder: '#2A8A31',
+  genreText: '#34A03B',
+  // Price badge on top of the image.
+  badgeFill: 'rgba(18,18,18,0.86)',
+  badgeBorder: 'rgba(255,255,255,0.22)',
 };
 
 // WhatsApp drops previews for heavy images; stay well below ~300 KB.
@@ -170,8 +180,9 @@ function formatWhen(ev) {
  * build-events.mjs; the night day (nightKey) is used for the date so an event
  * at 01:00 still belongs to the evening it started on.
  *
- * `chips` is the row of small labels on the story: event type, genres, price
- * and age, in that order. `kind` decides the style (see chip()).
+ * `chips` is the row of small labels: event type, genres and age, in that
+ * order. `kind` decides the style (see chip()). The price is separate: it is
+ * shown as a badge in the corner of the image.
  */
 export function buildCard(ev) {
   const { dateLabel, timeLabel, hero } = formatWhen(ev);
@@ -182,11 +193,9 @@ export function buildCard(ev) {
     .filter((label, index, all) => label && label !== typeLabel && all.indexOf(label) === index)
     .slice(0, MAX_GENRES);
 
-  const price = formatPrice(ev.price);
   const chips = [
     ...(typeLabel ? [{ kind: 'type', label: typeLabel }] : []),
     ...genreLabels.map((label) => ({ kind: 'genre', label })),
-    ...(price ? [{ kind: 'price', label: price }] : []),
     ...(ev.minAge ? [{ kind: 'age', label: `${ev.minAge}+` }] : []),
   ];
 
@@ -201,6 +210,7 @@ export function buildCard(ev) {
     timeLabel,
     hero,
     place: cleanText(ev.placeName, 42),
+    price: formatPrice(ev.price),
     chips,
     lineup,
   };
@@ -290,32 +300,37 @@ function ogTitleSize(text) {
   return Math.max(TITLE_MIN_SIZE, Math.min(base, wordCap));
 }
 
-// ── Chips ─────────────────────────────────────────────────────────────────────
+// ── Chips and price badge ─────────────────────────────────────────────────────
 
 const CHIP_FONT_SIZE = 30;
 const CHIP_PADDING_X = 24;
+const CHIP_PADDING_Y = 10;
 const CHIP_BORDER = 2;
 const CHIP_HEIGHT = 60;
 const CHIP_GAP = 12;
 // Average glyph width of Inter SemiBold relative to the font size.
 const CHIP_CHAR_WIDTH = 0.58;
 
-// Type: filled red. Genre and age: outlined. Price: light, like a price tag.
-function chip(item) {
-  const base = {
-    padding: `10px ${CHIP_PADDING_X}px`,
-    borderRadius: 999,
-    fontSize: CHIP_FONT_SIZE,
-    fontWeight: 600,
-    border: `${CHIP_BORDER}px solid`,
-  };
+// Dark pill with a coloured outline and text. Type: red. Genre: green (same
+// as the app). Age: neutral.
+function chip(item, { fontSize = CHIP_FONT_SIZE, padX = CHIP_PADDING_X, padY = CHIP_PADDING_Y } = {}) {
   const styles = {
-    type: { backgroundColor: COLOR.red, borderColor: COLOR.red, color: COLOR.text },
-    genre: { borderColor: COLOR.line, color: COLOR.muted },
+    type: { borderColor: COLOR.typeBorder, color: COLOR.typeText },
+    genre: { borderColor: COLOR.genreBorder, color: COLOR.genreText },
     age: { borderColor: COLOR.line, color: COLOR.muted },
-    price: { backgroundColor: COLOR.text, borderColor: COLOR.text, color: COLOR.bg },
   };
-  return h({ ...base, ...styles[item.kind] }, item.label);
+  return h(
+    {
+      padding: `${padY}px ${padX}px`,
+      borderRadius: 999,
+      fontSize,
+      fontWeight: 600,
+      border: `${CHIP_BORDER}px solid`,
+      backgroundColor: COLOR.bg,
+      ...styles[item.kind],
+    },
+    item.label,
+  );
 }
 
 // Number of rows the chips take when they wrap inside `width`.
@@ -338,13 +353,38 @@ function countChipRows(chips, width) {
   return rows;
 }
 
+// Price in a dark, slightly transparent pill. It sits in the corner of the
+// image, so it has to read on a red date block as well as on any flyer.
+// `extra` positions it (absolute inside the image, or in a header row).
+function priceBadge(label, { fontSize = 38, padX = 28, padY = 12, ...extra } = {}) {
+  return h(
+    {
+      padding: `${padY}px ${padX}px`,
+      borderRadius: 999,
+      fontSize,
+      fontWeight: 600,
+      color: COLOR.text,
+      backgroundColor: COLOR.badgeFill,
+      border: `2px solid ${COLOR.badgeBorder}`,
+      ...extra,
+    },
+    label,
+  );
+}
+
+const BADGE_INSET = 28;
+
 // Large date block shown where the cover would be, for events without a
 // cover of their own (about half of them): the date is the most useful thing
 // to see at a glance, and it keeps both kinds of card laid out the same way.
-function dateHero(hero, height) {
-  const bigSize = hero.big.length > 3 ? 250 : 340;
+// The day number grows with the block, so a tall block is not left empty.
+function dateHero(hero, height, price) {
+  const tall = height >= 640;
+  const isRange = hero.big.length > 3;
+  const bigSize = isRange ? (tall ? 300 : 250) : tall ? 400 : 340;
   return h(
     {
+      position: 'relative',
       width: 936,
       height,
       flexShrink: 0,
@@ -362,6 +402,7 @@ function dateHero(hero, height) {
       ),
       h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: bigSize, lineHeight: 0.95 }, hero.big),
       h({ fontSize: 52, fontWeight: 600, letterSpacing: 10, textTransform: 'uppercase' }, hero.bottom),
+      ...(price ? [priceBadge(price, { position: 'absolute', top: BADGE_INSET, right: BADGE_INSET })] : []),
     ],
   );
 }
@@ -382,7 +423,16 @@ const STORY_CONTENT_WIDTH = STORY_WIDTH - 2 * STORY_PAD_X;
 // flexible: it takes the space the other blocks leave over.
 const COVER_HEIGHT = 527;
 const HERO_MIN = 380;
-const HERO_MAX = 640;
+const HERO_MAX = 760;
+
+// Date row of a card with a cover: a red pill with the date, followed by the
+// hours. Both sit on one row when they fit, otherwise the hours wrap.
+const WHEN_PILL_FONT_SIZE = 36;
+const WHEN_PILL_PADDING_X = 30;
+const WHEN_PILL_CHAR_WIDTH = 0.68; // uppercase with letter spacing
+const WHEN_TIME_FONT_SIZE = 40;
+const WHEN_TIME_CHAR_WIDTH = 0.56;
+const WHEN_ROW_GAP = 20;
 
 // Block heights (px). Rows that depend on the font are estimated slightly
 // high, so the card never runs into the footer.
@@ -403,6 +453,14 @@ const FOOTER_GAP = 40;
 // does not fit otherwise.
 const TITLE_MAX_HEIGHTS = [380, 300, 230];
 
+// Height of the date row below the cover (pill and hours, one or two rows).
+function coverWhenHeight(card) {
+  const pillWidth = card.dateLabel.length * WHEN_PILL_FONT_SIZE * WHEN_PILL_CHAR_WIDTH + 2 * WHEN_PILL_PADDING_X;
+  const timeWidth = card.timeLabel ? card.timeLabel.length * WHEN_TIME_FONT_SIZE * WHEN_TIME_CHAR_WIDTH : 0;
+  const total = timeWidth > 0 ? pillWidth + WHEN_ROW_GAP + timeWidth : pillWidth;
+  return total <= STORY_CONTENT_WIDTH ? WHEN_PILL_HEIGHT : WHEN_PILL_HEIGHT + WHEN_ROW_GAP + WHEN_TEXT_HEIGHT;
+}
+
 /**
  * Decides the size of every flexible part of the story card, so that the
  * content always fits inside the safe zone and nothing is squeezed by the
@@ -414,7 +472,7 @@ const TITLE_MAX_HEIGHTS = [380, 300, 230];
  */
 function planStory(card, hasCover) {
   const hasWhenRow = hasCover || Boolean(card.timeLabel);
-  const whenBlock = hasWhenRow ? (hasCover ? WHEN_PILL_HEIGHT : WHEN_TEXT_HEIGHT) + WHEN_GAP : 0;
+  const whenBlock = hasWhenRow ? (hasCover ? coverWhenHeight(card) : WHEN_TEXT_HEIGHT) + WHEN_GAP : 0;
   const placeBlock = card.place ? PLACE_MARGIN + PLACE_HEIGHT : 0;
   const chipRows = countChipRows(card.chips, STORY_CONTENT_WIDTH);
   const chipsBlock = chipRows > 0 ? CHIPS_MARGIN + chipRows * CHIP_HEIGHT + (chipRows - 1) * CHIP_GAP : 0;
@@ -447,7 +505,21 @@ function planStory(card, hasCover) {
 
 // ── Card trees ────────────────────────────────────────────────────────────────
 
+// Chips of the link preview: type and first genre, and only when the title
+// leaves room for them.
+function ogChips(card, titleSize) {
+  const chips = [
+    card.chips.find((item) => item.kind === 'type'),
+    card.chips.find((item) => item.kind === 'genre'),
+  ].filter(Boolean);
+  const titleLines = Math.min(3, countTitleLines(card.title, titleSize, OG_WIDTH - 128));
+  return titleLines * titleSize * 1.02 <= 240 ? chips : [];
+}
+
 function brandedOgTree(card, logoUri) {
+  const titleSize = ogTitleSize(card.title);
+  const chips = ogChips(card, titleSize);
+
   return h(
     {
       width: OG_WIDTH,
@@ -461,9 +533,12 @@ function brandedOgTree(card, logoUri) {
       color: COLOR.text,
     },
     [
-      h({ alignItems: 'center', gap: 18 }, [
-        img(logoUri, 64, 64, { borderRadius: 15 }),
-        h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 44 }, 'Eaves'),
+      h({ alignItems: 'center', justifyContent: 'space-between' }, [
+        h({ alignItems: 'center', gap: 18 }, [
+          img(logoUri, 64, 64, { borderRadius: 15 }),
+          h({ fontFamily: 'Barlow Condensed', fontWeight: 700, fontSize: 44 }, 'Eaves'),
+        ]),
+        ...(card.price ? [priceBadge(card.price, { fontSize: 34, padX: 26, padY: 10 })] : []),
       ]),
       h({ flexDirection: 'column', gap: 18 }, [
         h(
@@ -481,12 +556,15 @@ function brandedOgTree(card, logoUri) {
           {
             fontFamily: 'Barlow Condensed',
             fontWeight: 700,
-            fontSize: ogTitleSize(card.title),
+            fontSize: titleSize,
             lineHeight: 1.02,
             lineClamp: 3,
           },
           card.title,
         ),
+        ...(chips.length > 0
+          ? [h({ flexWrap: 'wrap', gap: 10 }, chips.map((item) => chip(item, { fontSize: 26, padX: 20, padY: 8 })))]
+          : []),
       ]),
       h({ justifyContent: 'space-between', alignItems: 'center' }, [
         h({ fontSize: 36, color: COLOR.muted, maxWidth: 820, lineClamp: 1 }, card.place || ' '),
@@ -507,9 +585,10 @@ function placeRow(place) {
 // 9:16 card, laid out inside the Instagram safe zone. Sizes come from
 // planStory().
 //
-// Top: the cover, or a large date block when the event has no cover.
+// Top: the cover, or a large date block when the event has no cover. The
+// price badge sits in the top right corner of either.
 // Then: date and time (cover) or time only (date block), title, venue, a row
-// of chips (type, genres, price, age) and the lineup when there is room.
+// of chips (type, genres, age) and the lineup when there is room.
 // Bottom: logo and a plain call to action.
 //
 // With a cover the root has no background of its own: the renderer draws a
@@ -518,24 +597,31 @@ function storyTree(card, plan, logoUri, coverUri) {
   const hasCover = Boolean(coverUri);
 
   const whenRow = hasCover
-    ? h({ alignItems: 'center', flexWrap: 'wrap', gap: 20 }, [
+    ? h({ alignItems: 'center', flexWrap: 'wrap', gap: WHEN_ROW_GAP }, [
         h(
           {
-            padding: '14px 30px',
+            padding: `14px ${WHEN_PILL_PADDING_X}px`,
             borderRadius: 999,
             backgroundColor: COLOR.red,
-            fontSize: 36,
+            fontSize: WHEN_PILL_FONT_SIZE,
             fontWeight: 600,
             letterSpacing: 2,
             textTransform: 'uppercase',
           },
           card.dateLabel,
         ),
-        ...(card.timeLabel ? [h({ fontSize: 40, fontWeight: 600 }, card.timeLabel)] : []),
+        ...(card.timeLabel ? [h({ fontSize: WHEN_TIME_FONT_SIZE, fontWeight: 600 }, card.timeLabel)] : []),
       ])
     : card.timeLabel
       ? h({ fontSize: 44, fontWeight: 600 }, card.timeLabel)
       : null;
+
+  const visual = hasCover
+    ? h({ position: 'relative', width: STORY_CONTENT_WIDTH, height: plan.visualHeight, flexShrink: 0 }, [
+        img(coverUri, STORY_CONTENT_WIDTH, plan.visualHeight, { borderRadius: 28 }),
+        ...(card.price ? [priceBadge(card.price, { position: 'absolute', top: BADGE_INSET, right: BADGE_INSET })] : []),
+      ])
+    : dateHero(card.hero, plan.visualHeight, card.price);
 
   return h(
     {
@@ -548,9 +634,7 @@ function storyTree(card, plan, logoUri, coverUri) {
       ...(hasCover ? {} : { backgroundColor: COLOR.bg, backgroundImage: GLOW }),
     },
     [
-      hasCover
-        ? img(coverUri, STORY_CONTENT_WIDTH, plan.visualHeight, { borderRadius: 28, flexShrink: 0 })
-        : dateHero(card.hero, plan.visualHeight),
+      visual,
 
       h({ flexDirection: 'column', flexShrink: 0, marginTop: VISUAL_GAP }, [
         ...(whenRow ? [whenRow] : []),
